@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Pharma.Models.Medicine>
+
+@{
+    ViewBag.Title = "Medicine List";
+}
+
+<h2>Medicine List</h2>
+
+<p>
+    @Html.ActionLink("Add New Medicine", "CreateMedicine")
+</p>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Expiry Date</th>
+        <th>Quantity</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Price)</td>
+            <td>@Html.DisplayFor(modelItem => item.ExpiryDate)</td>
+            <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+            <td>
+                @Html.ActionLink("Edit", "EditMedicine", new { id = item.MedicineID }) |
+                @Html.ActionLink("Delete", "DeleteMedicine", new { id = item.MedicineID })
+            </td>
+        </tr>
+    }
+
+</table>

@@ -1,0 +1,18 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Assuming you have a layout
+
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<h2>Welcome, @Session["Username"]!</h2>
+
+<p>This is your admin dashboard.</p>
+
+<div>
+    <ul>
+        <li>@Html.ActionLink("Manage Medicines", "Index", "Admin")</li>
+        <li>@Html.ActionLink("Generate Report", "GenerateReport", "Admin")</li>
+        <!-- Add more links to other functionalities as needed -->
+    </ul>
+</div>

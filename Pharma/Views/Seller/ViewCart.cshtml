@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Pharma.Models.OrderItem>
+
+@{
+    ViewBag.Title = "Cart";
+}
+
+<h2>Your Cart</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Medicine Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MedicineName</td>
+                <td>@item.Quantity</td>
+                <td>@item.Price</td>
+                <td>@item.Total</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-success">Print Receipt</button>
+}
