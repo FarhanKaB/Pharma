@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Pharma.Models;
+
 
 namespace Pharma.Controllers
 {
@@ -11,7 +13,7 @@ namespace Pharma.Controllers
     {
         private PharmacyContext db = new PharmacyContext();
 
-        // GET: User/Login
+        // GET: User/Login & Signup
         public ActionResult UserLogin()
         {
             return View();
@@ -37,6 +39,39 @@ namespace Pharma.Controllers
                 }
             }
             return View();
+        }
+
+        // POST: User/ Signup
+      [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UserRegister(UserReg userReg)
+        {
+            if (ModelState.IsValid)
+            {
+                // Check if username is already taken
+                var existingUser = db.Customers.FirstOrDefault(u => u.Username == userReg.Username);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("", "Username already exists. Please choose a different one.");
+                    return View();
+                }
+
+                // Map UserReg to Customer model
+                var customer = new Customer
+                {
+                    Username = userReg.Username,
+                    Password = userReg.Password,
+                    Email = userReg.Email
+                };
+
+                // Add the new customer to the database
+                db.Customers.Add(customer);
+                db.SaveChanges();
+
+
+            }
+            return RedirectToAction("UserLogin");
+
         }
 
         // GET: User/Logout
