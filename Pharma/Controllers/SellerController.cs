@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Pharma.Models;
+using System;
 
 namespace Pharma.Controllers
 {
@@ -38,10 +39,28 @@ namespace Pharma.Controllers
         }
 
         // GET: Seller/Dashboard
-        public ActionResult Dashboard()
+        /*public ActionResult Dashboard()
         {
             return View();
         }
+*/
+        public ActionResult Dashboard()
+        {
+            var viewModel = new SellerDashboardViewModel
+            {
+                TotalUsers = db.Customers.Count(),
+                TotalMedicines = db.Medicines.Count(),
+/*                TotalOrders = db.Orders.Count(),
+*/                TotalVisitors = 0, // Implement visitor tracking logic if applicable
+                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).Take(10).ToList()
+            };
+
+            return View(viewModel);
+        }
+
+
+
+
 
         // GET: Seller/ViewMedicines
         public ActionResult ViewMedicines()

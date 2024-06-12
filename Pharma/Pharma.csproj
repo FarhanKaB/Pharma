@@ -134,6 +134,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202406121532479_UpdateDatabaseSchema.cs" />
+    <Compile Include="Migrations\202406121532479_UpdateDatabaseSchema.Designer.cs">
+      <DependentUpon>202406121532479_UpdateDatabaseSchema.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Medicine.cs" />
@@ -143,6 +148,7 @@
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\Seller.cs" />
+    <Compile Include="Models\SellerDashboardViewModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -242,6 +248,11 @@
     <Content Include="Scripts\bootstrap.bundle.js.map" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202406121532479_UpdateDatabaseSchema.resx">
+      <DependentUpon>202406121532479_UpdateDatabaseSchema.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
