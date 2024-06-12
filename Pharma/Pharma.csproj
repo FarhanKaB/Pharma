@@ -211,6 +211,7 @@
     <Content Include="Views\User\Dashboard.cshtml" />
     <Content Include="Views\User\ViewMedicines.cshtml" />
     <Content Include="Views\User\RequestMedicine.cshtml" />
+    <Content Include="Views\Shared\_NewLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
