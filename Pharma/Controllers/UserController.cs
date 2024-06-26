@@ -156,9 +156,6 @@ namespace Pharma.Controllers
         }
 
 
-
-
-
         // POST: User/AddToCart
         [HttpPost]
         [ValidateAntiForgeryToken]
