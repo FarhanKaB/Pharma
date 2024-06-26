@@ -4,45 +4,138 @@
     ViewBag.Title = "Available Medicines";
 }
 
-<h2>Available Medicines</h2>
+@*<h2>Available Medicines</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Expiry Date</th>
-            <th>Quantity</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>@item.Name</td>
-                <td>@item.Price</td>
-                <td>@item.ExpiryDate.ToShortDateString()</td>
-                <td>@item.Quantity</td>
-                <td>
-                    @using (Html.BeginForm("PlaceOrder", "User", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("medicineId", item.MedicineID)
-                        <input type="number" name="quantity" min="1" max="@item.Quantity" value="1" class="form-control" style="width: 80px; display: inline-block;" />
-                        <button type="submit" class="btn btn-primary">Place Order</button>
-                    }
-                </td>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Expiry Date</th>
+                <th>Quantity</th>
+                <th>Action</th>
             </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price</td>
+                    <td>@item.ExpiryDate.ToShortDateString()</td>
+                    <td>@item.Quantity</td>
+                    <td>
+                        @using (Html.BeginForm("PlaceOrder", "User", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("medicineId", item.MedicineID)
+                            <input type="number" name="quantity" min="1" max="@item.Quantity" value="1" class="form-control" style="width: 80px; display: inline-block;" />
+                            <button type="submit" class="btn btn-primary">Place Order</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+*@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Home Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 15px;
+            text-align: center;
         }
-    </tbody>
-</table>
+
+            .product-card img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .product-card button {
+                margin-top: 10px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Available Medicines</h1>
+        <div class="row">
+            @foreach (var medicine in Model)
+            {
+                <div class="col-md-3">
+                    <div class="product-card">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImgUrl)" alt="@medicine.Name">
+                        <h5>@medicine.Name</h5>
+                        <p>$@medicine.Price</p>
+                        @using (Html.BeginForm("AddToCart", "User", FormMethod.Post, new { @class = "add-to-cart-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("medicineId", medicine.MedicineID)
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        }
+
+                        @*<a href="@Url.Action("ViewCart", "User", new { medicineId = medicine.MedicineID })" class="btn btn-primary">Add to Cart</a>*@
+                        @* <button class="btn btn-primary" onclick="addToCart(@medicine.MedicineID)">Add to Cart</button>
+                        *@
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".add-to-cart-form").submit(function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: form.attr("action"),
+                    type: form.attr("method"),
+                    data: form.serialize(),
+                    success: function (response) {
+                        alert("Medicine added to cart successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error adding medicine to cart.");
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

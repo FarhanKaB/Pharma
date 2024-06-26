@@ -42,9 +42,9 @@ namespace Pharma.Controllers
         }
 
         // POST: User/ Signup
-      [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UserRegister(UserReg userReg)
+        public ActionResult UserRegister(UserReg userReg) ///      (Customer userReg) 
         {
             if (ModelState.IsValid)
             {
@@ -67,8 +67,6 @@ namespace Pharma.Controllers
                 // Add the new customer to the database
                 db.Customers.Add(customer);
                 db.SaveChanges();
-
-
             }
             return RedirectToAction("UserLogin");
 
@@ -88,10 +86,19 @@ namespace Pharma.Controllers
         }
 
         // GET: User/ViewMedicines
-        public ActionResult ViewMedicines()
+        
+        // Normally, this data would come from a database. Here it's hardcoded for simplicity.
+/*        private static List<Medicine> medicines = new List<Medicine>
         {
-            var medicines = db.Medicines.ToList();
-            return View(medicines);
+            new Medicine { MedicineID = 1, Name = "Medicine 1", Description = "Description 1", Price = 10.0m, ImageUrl = "G:\\AUST_LECTURES\\3.2_SD LAB\\Pharma(project)\\Pharma\\image\\img1.jpeg" },
+            new Medicine { MedicineID = 2, Name = "Medicine 2", Description = "Description 2", Price = 20.0m, ImageUrl = "G:\\AUST_LECTURES\\3.2_SD LAB\\Pharma(project)\\Pharma\\image\\img1.jpeg" },
+            // Add more medicines as needed
+        };*/
+
+        public ActionResult ViewMedicines()
+        { 
+          var medicines = db.Medicines.ToList();                                         ///View Medicines
+             return View(medicines);
         }
 
         // POST: User/PlaceOrder
@@ -147,5 +154,97 @@ namespace Pharma.Controllers
             TempData["Success"] = "Medicine request submitted successfully.";
             return RedirectToAction("Dashboard");
         }
+
+
+
+
+
+        // POST: User/AddToCart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddToCart(int medicineId)
+        {
+            var medicine = db.Medicines.Find(medicineId);
+            if (medicine == null)
+            {
+                return HttpNotFound();
+            }
+
+            List<int> cart;
+            if (Session["Cart"] == null)
+            {
+                cart = new List<int>();
+            }
+            else
+            {
+                cart = (List<int>)Session["Cart"];
+            }
+
+            cart.Add(medicine.MedicineID);
+            Session["Cart"] = cart;
+
+            return new HttpStatusCodeResult(System.Net.HttpStatusCode.OK);
+        }
+
+        // GET
+        public ActionResult ViewCart()
+        {
+            List<Medicine> cartMedicines = new List<Medicine>();
+            if (Session["Cart"] != null)
+            {
+                List<int> cart = (List<int>)Session["Cart"];
+                cartMedicines = db.Medicines.Where(m => cart.Contains(m.MedicineID)).ToList();
+            }
+
+            return View(cartMedicines);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*        // GET
+                public ActionResult ViewCart()
+                {
+                    return View(new List<Medicine>());
+                }
+
+                //POST
+                [HttpPost]
+                [ValidateAntiForgeryToken]
+                public ActionResult ViewCart(int medicineId)
+                {
+                    var medicine = db.Medicines.Find(medicineId);
+
+                    if (medicine == null)
+                    {
+                        return HttpNotFound();
+                    }
+
+                    List<Medicine> cartMedicines = new List<Medicine> { medicine };
+
+                    return View(cartMedicines);
+                }*/
+
+
+
+
+
+
+
+
+
+
     }
 }

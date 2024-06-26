@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Pharma.Models.Medicine>
+@{
+    ViewBag.Title = "ViewCart";
+}
+
+
+
+<div class="container">
+    <h1 class="text-center my-4">My Cart</h1>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var cartMedicines in Model)
+            {
+                <div class="col-md-12 mb-4">
+                    <div class="row align-items-center border p-3">
+                        <div class="col-md-3">
+                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(cartMedicines.ImgUrl)" alt="@cartMedicines.Name" class="img-fluid">
+                        </div>
+                        <div class="col-md-6">
+                            <h5>@cartMedicines.Name</h5>
+                            <p>Price: $@cartMedicines.Price</p>
+                            <p>Expiry Date: @cartMedicines.ExpiryDate.ToShortDateString()</p>
+                        </div>
+                        <div class="col-md-3 text-right">
+                            @using (Html.BeginForm("PlaceOrder", "User", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("medicineId", cartMedicines.MedicineID)
+                                <div class="form-group">
+                                    <label for="quantity">Quantity:</label>
+                                    <input type="number" name="quantity" min="1" max="@cartMedicines.Quantity" value="1" class="form-control d-inline-block" style="width: 80px;" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Place Order</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No items in your cart.</p>
+        }
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model IEnumerable<Pharma.Models.Medicine>
+    @{
+        ViewBag.Title = "ViewCart";
+    }
+
+    <h2>ViewCart</h2>
+
+    <div class="container">
+        <h1 class="text-center my-4">Your Cart</h1>
+        <div class="row">
+            @foreach (var cartMedicines in Model)
+            {
+                <div class="col-md-4">
+                    <div class="medicine-box">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(cartMedicines.ImgUrl)" alt="@cartMedicines.Name">
+                        <h5>@cartMedicines.Name</h5>
+                        <p>$@cartMedicines.Price</p>
+                        <p>Expiry Date: @cartMedicines.ExpiryDate.ToShortDateString()</p>
+                        <tr>
+                            <td>@cartMedicines.Quantity</td>
+                            <td>
+                                @using (Html.BeginForm("PlaceOrder", "User", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("medicineId", cartMedicines.MedicineID)
+                                    <input type="number" name="quantity" min="1" max="@cartMedicines.Quantity" value="1" class="form-control" style="width: 80px; display: inline-block;" />
+                                    <button type="submit" class="btn btn-primary">Place Order</button>
+                                }
+                            </td>
+                        </tr>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+*@
