@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/Content/Site.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -27,7 +27,6 @@
                     <li class="active"><a href="#">Dashboard</a></li>
                     <li><a href="#">News</a></li>
                     <li><a href="#">Complains</a></li>
-           
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#">Farhan</a></li>
@@ -36,68 +35,9 @@
             </div>
         </div>
     </nav>
-    <header class="page-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10">
-                    <h2><span class="glyphicon glyphicon-cog"></span> @ViewBag.Header</h2>
-                </div>
-                <div class="col-md-2">
-                    <div class="dropdown create">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Create
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            
-                            <li><a href="#">Add Customer</a></li>
-                            <li><a href="#">Add Seller</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <section id="breadcrumb">
-        <div class="container">
-            <ol class="breadcrumb">
-                <li class="active">Home</li>
-            </ol>
-        </div>
-    </section>
-    <section id="main">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item active main-color-bg">
-                            <span class="glyphicon glyphicon-cog"></span> Dashboard
-                        </a>
-                        <a href="#" class="list-group-item"><span class="badge">14</span> Medicine</a>
-                        <a href="#" class="list-group-item"><span class="badge">26</span> Seller</a>
-                        <a href="#" class="list-group-item"><span class="badge">54</span> Report</a>
-                    </div>
-                    <div class="well">
-                        <h4>Storage Capacity</h4>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                <span class="sr-only">60% Complete</span>
-                            </div>
-                        </div>
-                        <h4>Monthly Goal</h4>
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
-                                <span class="sr-only">40% Complete</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-9">
-                    @RenderBody()
-                </div>
-            </div>
-        </div>
-    </section>
-    
+
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
 </body>
 </html>
