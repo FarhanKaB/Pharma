@@ -13,4 +13,12 @@ namespace Pharma.Models
         public decimal Price { get; set; }
         public decimal Total => Quantity * Price;
     }
+
+    public class SellerDashboardViewModel
+    {
+        public int TotalUsers { get; set; }
+        public int TotalMedicines { get; set; }
+        public int TotalOrders { get; set; }
+        public List<Medicine> LatestMedicines { get; set; }
+    }
 }

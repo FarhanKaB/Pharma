@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Pharma.Models.SellerDashboardViewModel
+
+@{
     ViewBag.Title = "Seller Dashboard";
     ViewBag.Header = "Dashboard";
     Layout = "~/Views/Shared/_NewLayout.cshtml";
@@ -12,68 +14,59 @@
         <div class="col-md-3">
             <div class="well dash-box">
                 <h2><span class="glyphicon glyphicon-user"></span> @Model.TotalUsers</h2>
-@**@                <!--<h2><span class="glyphicon glyphicon-user"></span> 50</h2>-->
                 <h4>Users</h4>
             </div>
         </div>
         <div class="col-md-3 dash-box">
             <div class="well">
-                <h2><span class="glyphicon glyphicon-list-alt"></span> @Model.TotalMedicines</h2>
-@**@                <!--<h2><span class="glyphicon glyphicon-list-alt"></span> 50</h2>-->
-                <h4>Medicines</h4>
-            </div>
-        </div>
-        <div class="col-md-3 dash-box">
-            <div class="well">
-@*                <h2><span class="glyphicon glyphicon-pencil"></span> @Model.TotalOrders</h2>*@
-                <h2><span class="glyphicon glyphicon-pencil"></span>60</h2>
+                <h2><span class="glyphicon glyphicon-list-alt"></span> @Model.TotalOrders</h2>
                 <h4>Orders</h4>
             </div>
         </div>
         <div class="col-md-3 dash-box">
             <div class="well">
-                <h2><span class="glyphicon glyphicon-stats"></span> @Model.TotalVisitors</h2>
-@**@                <!--<h2><span class="glyphicon glyphicon-stats"></span> 10</h2>-->
-                <h4>Visitors</h4>
+                <h2><span class="glyphicon glyphicon-stats"></span> @Model.TotalMedicines</h2>
+                <h4>Medicines</h4>
             </div>
         </div>
     </div>
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading main-color-bg">Latest Medicines</div>
+    <div class="panel-heading main-color-bg">
+        <h3 class="panel-title">Latest Medicines</h3>
+    </div>
     <div class="panel-body">
         <table class="table table-striped table-hover">
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Expiry Date</th>
-                <th>Quantity</th>
-            </tr>
-             @foreach (var medicine in Model.LatestMedicines)
-        {
-            <tr>
-                <td>@medicine.Name</td>
-                <td>@medicine.Price</td>
-                <td>@medicine.ExpiryDate.ToShortDateString()</td>
-                <td>@medicine.Quantity</td>
-            </tr>
-        }
-
-
-
-
-
-
-           @* <tr>
-                <th>Napa</th>
-                <th>12</th>
-                <th>12-10-2025</th>
-                <th>25</th>
-            </tr>*@
-
-
-
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var medicine in Model.LatestMedicines)
+                {
+                    <tr>
+                        <td>@medicine.MedicineID</td>
+                        <td>@medicine.Name</td>
+                        <td>@medicine.Price</td>
+                        <td>@medicine.Quantity</td>
+                        <td>
+                            @using (Html.BeginForm("AddToList", "Seller", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("medicineId", medicine.MedicineID)
+                                <input type="number" name="quantity" min="1" max="@medicine.Quantity" value="1" />
+                                <button type="submit" class="btn btn-primary">Add to List</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
         </table>
     </div>
 </div>

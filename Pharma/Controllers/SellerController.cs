@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Pharma.Models;
-using System;
 
 namespace Pharma.Controllers
 {
@@ -39,28 +38,18 @@ namespace Pharma.Controllers
         }
 
         // GET: Seller/Dashboard
-        /*public ActionResult Dashboard()
-        {
-            return View();
-        }
-*/
         public ActionResult Dashboard()
         {
             var viewModel = new SellerDashboardViewModel
             {
                 TotalUsers = db.Customers.Count(),
                 TotalMedicines = db.Medicines.Count(),
-/*                TotalOrders = db.Orders.Count(),
-*/                TotalVisitors = 0, // Implement visitor tracking logic if applicable
+                /*TotalOrders = db.Orders.Count(),*/
+                TotalOrders = 50,
                 LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).Take(10).ToList()
             };
-
             return View(viewModel);
         }
-
-
-
-
 
         // GET: Seller/ViewMedicines
         public ActionResult ViewMedicines()
@@ -98,7 +87,7 @@ namespace Pharma.Controllers
             {
                 // Handle the case where the medicine is not available or quantity is insufficient
                 TempData["Error"] = "The requested quantity is not available.";
-                return RedirectToAction("ViewMedicines");
+                return RedirectToAction("Dashboard");
             }
         }
 

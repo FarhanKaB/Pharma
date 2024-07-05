@@ -148,7 +148,6 @@
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\Seller.cs" />
-    <Compile Include="Models\SellerDashboardViewModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
