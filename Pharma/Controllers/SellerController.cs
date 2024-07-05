@@ -81,13 +81,12 @@ namespace Pharma.Controllers
                 var cart = (List<OrderItem>)Session["Cart"];
                 cart.Add(item);
 
-                return RedirectToAction("ViewCart");
+                return Json(new { success = true });
             }
             else
             {
                 // Handle the case where the medicine is not available or quantity is insufficient
-                TempData["Error"] = "The requested quantity is not available.";
-                return RedirectToAction("Dashboard");
+                return Json(new { success = false, message = "The requested quantity is not available." });
             }
         }
 

@@ -56,11 +56,11 @@
                         <td>@medicine.Price</td>
                         <td>@medicine.Quantity</td>
                         <td>
-                            @using (Html.BeginForm("AddToList", "Seller", FormMethod.Post))
+                            @using (Html.BeginForm("AddToList", "Seller", FormMethod.Post, new { @class = "add-to-list-form" }))
                             {
                                 @Html.AntiForgeryToken()
                                 @Html.Hidden("medicineId", medicine.MedicineID)
-                                <input type="number" name="quantity" min="1" max="@medicine.Quantity" value="1" />
+                                <input type="number" name="quantity" min="1" max="@medicine.Quantity" value="1" class="form-control" />
                                 <button type="submit" class="btn btn-primary">Add to List</button>
                             }
                         </td>
@@ -70,3 +70,32 @@
         </table>
     </div>
 </div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <a href="@Url.Action("ViewCart", "Seller")" class="btn btn-success">View Cart</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.add-to-list-form').submit(function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var $form = $(this);
+                var url = $form.attr('action');
+                var data = $form.serialize();
+
+                $.post(url, data, function (response) {
+                    // Optionally show a success message or update the cart UI
+                    alert('Medicine added to cart successfully!');
+                }).fail(function () {
+                    // Optionally show an error message
+                    alert('Failed to add medicine to cart.');
+                });
+            });
+        });
+    </script>
+}
