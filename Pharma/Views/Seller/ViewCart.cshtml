@@ -2,39 +2,49 @@
 
 @{
     ViewBag.Title = "Cart";
+    Layout = "~/Views/Shared/_SellerLayout.cshtml";
 }
-
-<h2>Your Cart</h2>
 
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Medicine Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.MedicineName</td>
-                <td>@item.Quantity</td>
-                <td>@item.Price</td>
-                <td>@item.Total</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="card mt-4 mx-auto" style="max-width: 1500px;">
+    <div class="card-header bg-secondary text-white">
+        Cart Summary
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MedicineName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Total.ToString("C")</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
+                    <td><strong>@Model.Sum(item => item.Total).ToString("C")</strong></td>
+                </tr>
+            </tbody>
+        </table>
 
-@using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-success">Print Receipt</button>
-}
+        @using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success">Print Receipt</button>
+        }
+    </div>
+</div>
