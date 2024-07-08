@@ -101,6 +101,50 @@ namespace Pharma.Controllers
             return View(cart);
         }
 
+        // POST: Seller/UpdateQuantity
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateQuantity(int medicineId, int quantity)
+        {
+            var cart = Session["Cart"] as List<OrderItem>;
+            if (cart != null)
+            {
+                var item = cart.FirstOrDefault(i => i.MedicineID == medicineId);
+                if (item != null)
+                {
+                    var medicine = db.Medicines.Find(medicineId);
+                    if (medicine != null && medicine.Quantity >= quantity)
+                    {
+                        item.Quantity = quantity;
+                        /*item.Total = item.Quantity * item.Price;*/
+                        return RedirectToAction("ViewCart");
+                    }
+                    else
+                    {
+                        TempData["Error"] = "The requested quantity is not available.";
+                    }
+                }
+            }
+            return RedirectToAction("ViewCart");
+        }
+
+        // POST: Seller/DeleteItem
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteItem(int medicineId)
+        {
+            var cart = Session["Cart"] as List<OrderItem>;
+            if (cart != null)
+            {
+                var item = cart.FirstOrDefault(i => i.MedicineID == medicineId);
+                if (item != null)
+                {
+                    cart.Remove(item);
+                }
+            }
+            return RedirectToAction("ViewCart");
+        }
+
         // POST: Seller/PrintReceipt
         [HttpPost]
         [ValidateAntiForgeryToken]

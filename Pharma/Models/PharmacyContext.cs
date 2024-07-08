@@ -17,6 +17,7 @@ namespace Pharma.Models
         public DbSet<User> Users { get; set; }  // Ensure this line exists
 
 
+
         public PharmacyContext() : base("PharmacyDBConnectionString")
         {
         }

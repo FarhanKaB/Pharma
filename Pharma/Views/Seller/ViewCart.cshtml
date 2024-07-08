@@ -22,6 +22,7 @@
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,14 +30,30 @@
                 {
                     <tr>
                         <td>@item.MedicineName</td>
-                        <td>@item.Quantity</td>
+                        <td>
+                            @using (Html.BeginForm("UpdateQuantity", "Seller", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("medicineId", item.MedicineID)
+                                <input type="number" name="quantity" min="1" value="@item.Quantity" class="form-control d-inline-block" style="width: 60px;" />
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            }
+                        </td>
                         <td>@item.Price.ToString("C")</td>
                         <td>@item.Total.ToString("C")</td>
+                        <td>
+                            @using (Html.BeginForm("DeleteItem", "Seller", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("medicineId", item.MedicineID)
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            }
+                        </td>
                     </tr>
                 }
                 <tr>
                     <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
-                    <td><strong>@Model.Sum(item => item.Total).ToString("C")</strong></td>
+                    <td colspan="2"><strong>@Model.Sum(item => item.Total).ToString("C")</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -44,7 +61,7 @@
         @using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-success">Print Receipt</button>
+            <button type="submit" class="btn btn-secondary">Print Receipt</button>
         }
     </div>
 </div>
