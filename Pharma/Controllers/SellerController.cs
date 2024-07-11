@@ -80,7 +80,6 @@ namespace Pharma.Controllers
                     /*Total = quantity * medicine.Price*/
                 };
 
-                // Store the item in the session
                 if (Session["Cart"] == null)
                 {
                     Session["Cart"] = new List<OrderItem>();
@@ -92,7 +91,6 @@ namespace Pharma.Controllers
             }
             else
             {
-                // Handle the case where the medicine is not available or quantity is insufficient
                 return Json(new { success = false, message = "The requested quantity is not available." });
             }
         }
@@ -166,7 +164,7 @@ namespace Pharma.Controllers
                 {
                     try
                     {
-                        // Create and save the receipt
+                        
                         var receipt = new Receipt
                         {
                             DateCreated = DateTime.Now,
@@ -175,7 +173,7 @@ namespace Pharma.Controllers
                         db.Receipts.Add(receipt);
                         db.SaveChanges();
 
-                        // Save the receipt items
+                        
                         foreach (var item in cart)
                         {
                             var receiptItem = new ReceiptItem
@@ -189,7 +187,7 @@ namespace Pharma.Controllers
                             };
                             db.ReceiptItems.Add(receiptItem);
 
-                            // Update medicine quantity in the database
+                            
                             var medicine = db.Medicines.Find(item.MedicineID);
                             if (medicine != null)
                             {
@@ -200,14 +198,14 @@ namespace Pharma.Controllers
 
                         transaction.Commit();
 
-                        // Generate the PDF receipt
+                        
                         using (MemoryStream stream = new MemoryStream())
                         {
                             Document pdfDoc = new Document(PageSize.A4, 25f, 25f, 30f, 30f);
                             PdfWriter.GetInstance(pdfDoc, stream).CloseStream = false;
                             pdfDoc.Open();
 
-                            // Add store details
+                            
                             var titleFont = FontFactory.GetFont("Arial", 18, Font.BOLD);
                             var regularFont = FontFactory.GetFont("Arial", 12, Font.NORMAL);
                             var boldFont = FontFactory.GetFont("Arial", 12, Font.BOLD);
@@ -217,19 +215,19 @@ namespace Pharma.Controllers
                             pdfDoc.Add(new Paragraph("Phone: (123) 456-7890", regularFont) { Alignment = Element.ALIGN_CENTER });
                             pdfDoc.Add(new Paragraph(" ", regularFont));
 
-                            // Add receipt details
+                            
                             pdfDoc.Add(new Paragraph("Receipt", titleFont) { Alignment = Element.ALIGN_CENTER });
                             pdfDoc.Add(new Paragraph(" ", regularFont));
                             pdfDoc.Add(new Paragraph("Date: " + DateTime.Now.ToString("MM/dd/yyyy"), regularFont) { Alignment = Element.ALIGN_RIGHT });
                             pdfDoc.Add(new Paragraph("Time: " + DateTime.Now.ToString("HH:mm:ss"), regularFont) { Alignment = Element.ALIGN_RIGHT });
                             pdfDoc.Add(new Paragraph(" "));
 
-                            // Add table
+                            
                             PdfPTable table = new PdfPTable(4);
                             table.WidthPercentage = 100;
                             table.SetWidths(new float[] { 3f, 1f, 2f, 2f });
 
-                            // Add table header
+                            
                             PdfPCell cell = new PdfPCell(new Phrase("Medicine Name", boldFont));
                             cell.HorizontalAlignment = Element.ALIGN_CENTER;
                             cell.Padding = 5;
@@ -250,7 +248,7 @@ namespace Pharma.Controllers
                             cell.Padding = 5;
                             table.AddCell(cell);
 
-                            // Add table rows
+                            
                             foreach (var item in cart)
                             {
                                 table.AddCell(new PdfPCell(new Phrase(item.MedicineName, regularFont)) { Padding = 5 });
@@ -259,7 +257,7 @@ namespace Pharma.Controllers
                                 table.AddCell(new PdfPCell(new Phrase(item.Total.ToString("C"), regularFont)) { Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
                             }
 
-                            // Add total row
+                            
                             PdfPCell emptyCell = new PdfPCell(new Phrase(""));
                             emptyCell.Border = PdfPCell.NO_BORDER;
                             table.AddCell(emptyCell);
@@ -281,7 +279,6 @@ namespace Pharma.Controllers
                             byte[] bytes = stream.ToArray();
                             stream.Close();
 
-                            // Clear the cart after printing
                             Session["Cart"] = null;
 
                             return File(bytes, "application/pdf", "Receipt.pdf");

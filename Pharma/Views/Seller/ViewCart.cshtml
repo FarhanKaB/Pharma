@@ -36,7 +36,7 @@
                                 @Html.AntiForgeryToken()
                                 @Html.Hidden("medicineId", item.MedicineID)
                                 <input type="number" name="quantity" min="1" value="@item.Quantity" class="form-control d-inline-block" style="width: 60px;" />
-                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                <button type="submit" class="btn btn-warning btn-sm">Update</button>
                             }
                         </td>
                         <td>@item.Price.ToString("C")</td>
@@ -61,7 +61,7 @@
         @using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-secondary">Print Receipt</button>
+            <button type="submit" class="btn btn-success">Confirm</button>
         }
     </div>
 </div>

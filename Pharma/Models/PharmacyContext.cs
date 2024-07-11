@@ -14,7 +14,7 @@ namespace Pharma.Models
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<MedicineRequest> MedicineRequests { get; set; }
-        public DbSet<User> Users { get; set; }  // Ensure this line exists
+        public DbSet<User> Users { get; set; }  
 
         public DbSet<Receipt> Receipts { get; set; }
         public DbSet<ReceiptItem> ReceiptItems { get; set; }
