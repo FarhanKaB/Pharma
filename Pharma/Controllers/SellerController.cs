@@ -60,7 +60,7 @@ namespace Pharma.Controllers
                 var item = new OrderItem
                 {
                     MedicineID = medicine.MedicineID,
-                    MedicineName = medicine.Name,
+                    MedicineName = medicine.MedicineName,
                     Quantity = quantity,
                     Price = medicine.Price
                 };

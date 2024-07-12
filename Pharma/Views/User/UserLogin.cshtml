@@ -38,7 +38,7 @@
     <title>@ViewBag.Title</title>
     <style>
 
-
+        
         * {
             margin: 0;
             padding: 0;
@@ -63,8 +63,8 @@
             position: relative;
             overflow: hidden;
             width: 768px;
-            max-width: 100%;
-            min-height: 480px;
+            max-width: 120%;
+            min-height: 530px;
         }
 
             .container p {
@@ -113,8 +113,7 @@
                 padding: 0 40px;
                 height: 100%;
             }
-
-            .container input {
+            .container textarea {
                 background-color: #eee;
                 border: none;
                 margin: 8px 0;
@@ -124,6 +123,17 @@
                 width: 100%;
                 outline: none;
             }
+
+        .container input {
+            background-color: #eee;
+            border: none;
+            margin: 8px 0;
+            padding: 10px 15px;
+            font-size: 13px;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+        }
 
         .form-container {
             position: absolute;
@@ -274,9 +284,13 @@
                     <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your email for registration</span>
-                <input type="text" placeholder="Name" name="Username" required>
+                <input type="text" placeholder="Username" name="Username" required>
+                <input type="text" placeholder="Full Name" name="FullName" required>
+                <input type="text" placeholder="Phone" name="Phone" required>
                 <input type="email" placeholder="Email" name="Email" required>
                 <input type="password" placeholder="Password" name="Password" required>
+                <textarea type="text" placeholder="Address" name="Address" ></textarea>
+                //<input type="text" placeholder="Address" name="Address" required>
                 <button type="submit">Sign Up</button>
             }
         </div>

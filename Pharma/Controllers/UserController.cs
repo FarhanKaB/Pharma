@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
 using Pharma.Models;
@@ -44,7 +46,7 @@ namespace Pharma.Controllers
         // POST: User/ Signup
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UserRegister(UserReg userReg) ///      (Customer userReg) 
+        public ActionResult UserRegister(Customer userReg) ///      (Customer userReg) 
         {
             if (ModelState.IsValid)
             {
@@ -59,6 +61,9 @@ namespace Pharma.Controllers
                 // Map UserReg to Customer model
                 var customer = new Customer
                 {
+                    FullName=userReg.FullName,
+                    Address=userReg.Address,
+                    Phone=userReg.Phone,
                     Username = userReg.Username,
                     Password = userReg.Password,
                     Email = userReg.Email
@@ -112,9 +117,10 @@ namespace Pharma.Controllers
                 var order = new Order
                 {
                     CustomerID = (int)Session["UserID"],
-                    MedicineID = medicine.MedicineID,
-                    Quantity = quantity,
-                    OrderDate = DateTime.Now
+                    //MedicineID = medicine.MedicineID,
+
+                    OrderDate = DateTime.Now,
+                    TotalPrice = medicine.Price * quantity
                 };
 
                 db.Orders.Add(order);
@@ -195,12 +201,6 @@ namespace Pharma.Controllers
 
             return View(cartMedicines);
         }
-
-
-
-
-
-
 
 
 
