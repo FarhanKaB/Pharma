@@ -15,29 +15,30 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQm5B+6xHq8E6mZpWnDhX5O59Oz5YgSw1A0W9U+f4/UfE09z63SpF9JhU" crossorigin="anonymous">
 
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .table-container {
-            max-height: 300px; /* Adjust the maximum height as needed */
+            max-height: 282px; /* Adjust the maximum height as needed */
             overflow-y: auto;
         }
     </style>
 </head>
 
 <body>
-    <div class="container-fluid mt-3">
+    <div class="container mt-3">
         <div class="row">
             <div class="col-md-3">
                 <div class="list-group">
                     <div class="card">
                         <div class="card-header bg-secondary text-white">
-                            User Management
+                            Customer Management
                         </div>
                         <div class="card-body">
-                            <a href="@Url.Action("Index", "Users")" class="list-group-item list-group-item-action">View Users</a>
-                            <a href="@Url.Action("Roles", "Users")" class="list-group-item list-group-item-action">Manage Roles</a>
-                            <a href="@Url.Action("Permissions", "Users")" class="list-group-item list-group-item-action">Manage Permissions</a>
+                            <a href="@Url.Action("Display_Customer", "Admin")" class="list-group-item list-group-item-action">Manage Roles & Permissions</a>
+                            <a href="@Url.Action("Create_Customer_Account", "Admin")" class="list-group-item list-group-item-action">Register Customer</a>
+                            <a href="@Url.Action("View_Complain", "Admin")" class="list-group-item list-group-item-action">View Complain</a>
+                            
                         </div>
                     </div>
                     <div class="card mt-3">
@@ -45,12 +46,12 @@
                             Seller Management
                         </div>
                         <div class="card-body">
-                            <a href="@Url.Action("Index", "Seller")" class="list-group-item list-group-item-action">View Sellers</a>
-                            <a href="@Url.Action("Manage", "Seller")" class="list-group-item list-group-item-action">Manage Sellers</a>
-                            <a href="@Url.Action("Orders", "Seller")" class="list-group-item list-group-item-action">View Orders</a>
+                            <a href="@Url.Action("ManageSeller", "Admin")" class="list-group-item list-group-item-action">Manage Roles & Permissions</a>
+                            <a href="@Url.Action("RegisterSellerAccount", "Admin")" class="list-group-item list-group-item-action">Register Seller</a>
+                            <a href="@Url.Action("ViewRequest", "Admin")" class="list-group-item list-group-item-action">View Request</a>
                         </div>
                     </div>
-                    <div class="card mt-3">
+                   @* <div class="card mt-3">
                         <div class="card-header bg-secondary text-white">
                             Report Management
                         </div>
@@ -59,7 +60,7 @@
                             <a href="@Url.Action("Generate", "Report")" class="list-group-item list-group-item-action">Generate Report</a>
                             <a href="@Url.Action("Analytics", "Report")" class="list-group-item list-group-item-action">Analytics</a>
                         </div>
-                    </div>
+                    </div>*@
                    
                 </div>
 
@@ -75,7 +76,8 @@
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h2><i class="bi bi-people"></i> 8</h2>
+                                    <h2><i class="fa-solid fa-users-gear"></i> @ViewBag.TotalSellers</h2>
+
                                     <h4>Sellers</h4>
                                 </div>
                             </div>
@@ -83,7 +85,15 @@
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h2><i class="bi bi-capsule"></i> 1875</h2>
+                                    <h2><i class="bi bi-people-fill"></i> @ViewBag.TotalCustomers</h2>
+                                    <h4>Customers</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2><i class="bi bi-capsule"></i> @ViewBag.UniqueMedicines</h2>
                                     <h4>Medicine</h4>
                                 </div>
                             </div>
@@ -91,23 +101,52 @@
                         <div class="col-md-3">
                             <div class="card text-center">
                                 <div class="card-body">
+                                    <h2><i class="fa-solid fa-warehouse"></i> @ViewBag.TotalMedicines</h2>
+                                    
+                                    <h4>Inventory</h4>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3 mt-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2><i class="fa-solid fa-truck-fast"></i> 28</h2>
+                                    <h4>Orders</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2><i class="fa-solid fa-hourglass-half"></i> 28</h2>
+                                    <h4>Pending</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-3">
+                            <div class="card text-center">
+                                <div class="card-body">
                                     <h2><i class="bi bi-pencil-square"></i> 28</h2>
                                     <h4>Request</h4>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+
+                        <div class="col-md-3 mt-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h2><i class="bi bi-graph-up"></i> 1140</h2>
-                                    <h4>Visitors</h4>
+                                    <h2><i class="fa-solid fa-chart-line"></i> 2800000</h2>
+                                    <h4>Revenue</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card mt-4">
+
+                <div class="card mt-4 mb-3">
                     <div class="card-header bg-secondary text-white">
                         Latest Updates
                     </div>
@@ -146,31 +185,8 @@
                                         <td>farhan@gmail.com</td>
                                         <td>Oct 14, 2017</td>
                                     </tr>
-                                    <tr>
-                                        <td>Rifat</td>
-                                        <td>Rifat@gmail.com</td>
-                                        <td>Oct 14, 2017</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ridwan</td>
-                                        <td>Ridwan@gmail.com</td>
-                                        <td>Oct 14, 2017</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Farhan</td>
-                                        <td>farhan@gmail.com</td>
-                                        <td>Oct 14, 2017</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Rifat</td>
-                                        <td>Rifat@gmail.com</td>
-                                        <td>Oct 14, 2017</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Ridwan</td>
-                                        <td>Ridwan@gmail.com</td>
-                                        <td>Oct 14, 2017</td>
-                                    </tr>
+                                  
+                                    
                                     <!-- Add more rows as needed -->
                                 </tbody>
                             </table>

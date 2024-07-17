@@ -129,9 +129,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MedicineController.cs" />
-    <Compile Include="Controllers\SellerController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -140,7 +137,7 @@
     <Compile Include="Models\Medicine.cs" />
     <Compile Include="Models\MedicineRequest.cs" />
     <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\OrderItem.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="Models\Seller.cs" />
@@ -198,9 +195,6 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Admin\Login.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\CreateMedicine.cshtml" />
-    <Content Include="Views\Admin\EditMedicine.cshtml" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Seller\SellerLogin.cshtml" />
     <Content Include="Views\Seller\Dashboard.cshtml" />
@@ -212,7 +206,14 @@
     <Content Include="Views\User\ViewMedicines.cshtml" />
     <Content Include="Views\User\RequestMedicine.cshtml" />
     <Content Include="Views\Shared\_NewLayout.cshtml" />
-    <Content Include="Views\Medicine\Index.cshtml" />
+    <Content Include="Views\Admin\Admin_Inventory.cshtml" />
+    <Content Include="Views\Admin\Display_Customer.cshtml" />
+    <Content Include="Views\Admin\Create_Customer_Account.cshtml" />
+    <Content Include="Views\Admin\View_Complain.cshtml" />
+    <Content Include="Views\Admin\ManageSeller.cshtml" />
+    <Content Include="Views\Admin\RegisterSellerAccount.cshtml" />
+    <Content Include="Views\Admin\Profile.cshtml" />
+    <Content Include="Views\Admin\Order.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
