@@ -155,12 +155,13 @@
     </div>
 </div>
 
+
 <!-- Order Details Modal -->
 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+                <h5 class="modal-title" id="orderDetailsModalLabel">Order Information</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -182,64 +183,82 @@
             .then(response => response.json())
             .then(data => {
                 var detailsHtml = `
-                    <h5 class="mb-3">Order Details</h5>
-                    <table class="table">
-                        <tbody>
+                    <div class="container p-4">
+                        <h5>Order Details</h5>
+                        <table class="table table-bordered mb-4">
                             <tr>
-                                <th scope="row">Order ID</th>
+                                <td><strong>Order ID:</strong></td>
                                 <td>${data.OrderID}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Date</th>
+                                <td><strong>Order Date:</strong></td>
                                 <td>${data.OrderDate}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Total Price</th>
+                                <td><strong>Total Price:</strong></td>
                                 <td>${data.TotalPrice}</td>
                             </tr>
+                        </table>
+
+                        <h5>Customer Details</h5>
+                        <table class="table table-bordered mb-4">
                             <tr>
-                                <th scope="row">Customer Name</th>
+                                <td><strong>Name:</strong></td>
                                 <td>${data.Customer.FullName}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Email</th>
+                                <td><strong>Email:</strong></td>
                                 <td>${data.Customer.Email}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Phone</th>
+                                <td><strong>Phone:</strong></td>
                                 <td>${data.Customer.Phone}</td>
                             </tr>
-                        </tbody>
-                    </table>
-                    <h5 class="mt-4 mb-3">Order Items</h5>
-                    <table class="table table-bordered">
-                        <thead>
                             <tr>
-                                <th scope="col">Medicine Name</th>
-                                <th scope="col">Generic Name</th>
-                                <th scope="col">Manufacturer</th>
-                                <th scope="col">Dosage Form</th>
-                                <th scope="col">Strength</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Category</th>
+                               <td><strong>Address:</strong></td>
+                               <td>${data.Customer.Address}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${data.OrderDetails.map(detail => `
+                        </table>
+
+                        <h5 class="mb-3">Order Items</h5>
+                        <table class="table table-bordered table-striped">
+                            <thead>
                                 <tr>
-                                    <td>${detail.MedicineName}</td>
-                                    <td>${detail.GenericName}</td>
-                                    <td>${detail.Manufacturer}</td>
-                                    <td>${detail.DosageForm}</td>
-                                    <td>${detail.Strength}</td>
-                                    <td>${detail.Quantity}</td>
-                                    <td>${detail.Price}</td>
-                                    <td>${detail.Category}</td>
+                                    <th>Medicine Name</th>
+                                    <th>Generic Name</th>
+                                    <th>Manufacturer</th>
+                                    <th>Dosage Form</th>
+                                    <th>Strength</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                ${data.OrderDetails.map(detail => `
+                                    <tr>
+                                        <td>${detail.MedicineName}</td>
+                                        <td>${detail.GenericName}</td>
+                                        <td>${detail.Manufacturer}</td>
+                                        <td>${detail.DosageForm}</td>
+                                        <td>${detail.Strength}</td>
+                                        <td>${detail.Quantity}</td>
+                                        <td>${detail.Price}</td>
+                                        <td>${detail.Category}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                               
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <h5>Total: ${data.TotalPrice}</h5>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 modalBody.innerHTML = detailsHtml;
             })
@@ -289,3 +308,4 @@
     updateBadgeCount('inProcessOrders', 'inProcessBadge');
     updateBadgeCount('pendingOrders', 'pendingBadge');
 </script>
+

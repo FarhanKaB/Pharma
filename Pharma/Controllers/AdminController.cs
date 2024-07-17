@@ -629,7 +629,8 @@ namespace Pharma.Controllers
                 {
                     order.Customer.FullName,
                     order.Customer.Email,
-                    order.Customer.Phone
+                    order.Customer.Phone,
+                    order.Customer.Address
                 },
                 OrderDetails = order.OrderDetails.Select(od => new
                 {
