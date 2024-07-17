@@ -16,6 +16,9 @@
                     <th>Receipt ID</th>
                     <th>Date Created</th>
                     <th>Total Amount</th>
+                    <th>Buyer Name</th>
+                    <th>Buyer Phone</th>
+                    <th>Seller ID</th>
                     <th>Details</th>
                 </tr>
             </thead>
@@ -26,6 +29,9 @@
                         <td>@receipt.ReceiptID</td>
                         <td>@receipt.DateCreated.ToString("MM/dd/yyyy HH:mm:ss")</td>
                         <td>@receipt.TotalAmount.ToString("C")</td>
+                        <td>@receipt.BuyerName</td>
+                        <td>@receipt.BuyerPhone</td>
+                        <td>@receipt.SellerID</td>
                         <td>
                             <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#details-@receipt.ReceiptID" aria-expanded="false" aria-controls="details-@receipt.ReceiptID">
                                 View Details
@@ -33,7 +39,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="4">
+                        <td colspan="7">
                             <div class="collapse" id="details-@receipt.ReceiptID">
                                 <table class="table table-bordered mt-2">
                                     <thead>

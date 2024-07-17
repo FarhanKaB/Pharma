@@ -70,8 +70,8 @@ namespace Pharma.Controllers
                 var order = new Order
                 {
                     CustomerID = (int)Session["UserID"],
-                    MedicineID = medicine.MedicineID,
-                    Quantity = quantity,
+                    /*MedicineID = medicine.MedicineID,*/
+                    /*Quantity = quantity,*/
                     OrderDate = DateTime.Now
                 };
 
@@ -106,8 +106,8 @@ namespace Pharma.Controllers
                 RequestDate = DateTime.Now
             };
 
-            db.MedicineRequests.Add(request);
-            db.SaveChanges();
+/*            db.MedicineRequests.Add(request);
+*/            db.SaveChanges();
 
             TempData["Success"] = "Medicine request submitted successfully.";
             return RedirectToAction("Dashboard");

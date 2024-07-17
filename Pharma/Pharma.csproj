@@ -226,6 +226,7 @@
     <Compile Include="Models\Medicine.cs" />
     <Compile Include="Models\MedicineRequest.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Receipt.cs" />

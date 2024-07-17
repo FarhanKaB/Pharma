@@ -61,6 +61,14 @@
         @using (Html.BeginForm("PrintReceipt", "Seller", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
+            <div class="mb-3">
+                <label for="buyerName" class="form-label">Buyer Name</label>
+                <input type="text" class="form-control" id="buyerName" name="buyerName" required />
+            </div>
+            <div class="mb-3">
+                <label for="buyerPhone" class="form-label">Buyer Phone</label>
+                <input type="text" class="form-control" id="buyerPhone" name="buyerPhone" required />
+            </div>
             <button type="submit" class="btn btn-success">Confirm</button>
         }
     </div>

@@ -10,6 +10,9 @@ namespace Pharma.Models
         public int ReceiptID { get; set; }
         public DateTime DateCreated { get; set; }
         public decimal TotalAmount { get; set; }
+        public string BuyerName { get; set; } // New property
+        public string BuyerPhone { get; set; } // New property
+        public int SellerID { get; set; } // New property
 
         public virtual ICollection<ReceiptItem> ReceiptItems { get; set; }
     }

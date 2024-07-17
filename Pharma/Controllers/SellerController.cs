@@ -9,7 +9,6 @@ using System;
 
 using System.Data.Entity;
 
-
 namespace Pharma.Controllers
 {
     public class SellerController : Controller
@@ -51,7 +50,7 @@ namespace Pharma.Controllers
             {
                 TotalUsers = db.Customers.Count(),
                 TotalMedicines = db.Medicines.Count(),
-                TotalOrders = 50,
+                TotalOrders = db.Orders.Count(), // Updated to get actual order count
                 LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).Take(10).ToList()
             };
             return View(viewModel);
@@ -74,10 +73,10 @@ namespace Pharma.Controllers
                 var item = new OrderItem
                 {
                     MedicineID = medicine.MedicineID,
-                    MedicineName = medicine.Name,
+                    MedicineName = medicine.MedicineName,
                     Quantity = quantity,
                     Price = medicine.Price,
-                    /*Total = quantity * medicine.Price*/
+                    /*Total = quantity * medicine.Price*/ // Ensure Total is calculated
                 };
 
                 if (Session["Cart"] == null)
@@ -102,11 +101,18 @@ namespace Pharma.Controllers
             return View(cart);
         }
 
+        /*public ActionResult ViewReceipts()
+        {
+            var receipts = db.Orders.Include(o => o.OrderDetails.Select(od => od.Medicine)).ToList();
+            return View(receipts);
+        }*/
+
         public ActionResult ViewReceipts()
         {
             var receipts = db.Receipts.Include(r => r.ReceiptItems).ToList();
             return View(receipts);
         }
+
 
         // POST: Seller/UpdateQuantity
         [HttpPost]
@@ -123,7 +129,7 @@ namespace Pharma.Controllers
                     if (medicine != null && medicine.Quantity >= quantity)
                     {
                         item.Quantity = quantity;
-                        /*item.Total = item.Quantity * item.Price;*/
+                        /*item.Total = item.Quantity * item.Price;*/ // Ensure Total is updated
                         return RedirectToAction("ViewCart");
                     }
                     else
@@ -155,25 +161,35 @@ namespace Pharma.Controllers
         // POST: Seller/PrintReceipt
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PrintReceipt()
+        public ActionResult PrintReceipt(string buyerName, string buyerPhone)
         {
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("ViewCart");
+            }
+
+            var sellerId = (int)Session["SellerID"];
             var cart = Session["Cart"] as List<OrderItem>;
+
             if (cart != null && cart.Count > 0)
             {
                 using (var transaction = db.Database.BeginTransaction())
                 {
                     try
                     {
-                        
                         var receipt = new Receipt
                         {
                             DateCreated = DateTime.Now,
-                            TotalAmount = cart.Sum(item => item.Total)
+                            TotalAmount = cart.Sum(item => item.Total),
+                            BuyerName = buyerName,
+                            BuyerPhone = buyerPhone,
+                            SellerID = sellerId
                         };
+
                         db.Receipts.Add(receipt);
                         db.SaveChanges();
 
-                        
                         foreach (var item in cart)
                         {
                             var receiptItem = new ReceiptItem
@@ -187,7 +203,6 @@ namespace Pharma.Controllers
                             };
                             db.ReceiptItems.Add(receiptItem);
 
-                            
                             var medicine = db.Medicines.Find(item.MedicineID);
                             if (medicine != null)
                             {
@@ -198,14 +213,12 @@ namespace Pharma.Controllers
 
                         transaction.Commit();
 
-                        
                         using (MemoryStream stream = new MemoryStream())
                         {
                             Document pdfDoc = new Document(PageSize.A4, 25f, 25f, 30f, 30f);
                             PdfWriter.GetInstance(pdfDoc, stream).CloseStream = false;
                             pdfDoc.Open();
 
-                            
                             var titleFont = FontFactory.GetFont("Arial", 18, Font.BOLD);
                             var regularFont = FontFactory.GetFont("Arial", 12, Font.NORMAL);
                             var boldFont = FontFactory.GetFont("Arial", 12, Font.BOLD);
@@ -215,19 +228,21 @@ namespace Pharma.Controllers
                             pdfDoc.Add(new Paragraph("Phone: (123) 456-7890", regularFont) { Alignment = Element.ALIGN_CENTER });
                             pdfDoc.Add(new Paragraph(" ", regularFont));
 
-                            
                             pdfDoc.Add(new Paragraph("Receipt", titleFont) { Alignment = Element.ALIGN_CENTER });
                             pdfDoc.Add(new Paragraph(" ", regularFont));
                             pdfDoc.Add(new Paragraph("Date: " + DateTime.Now.ToString("MM/dd/yyyy"), regularFont) { Alignment = Element.ALIGN_RIGHT });
                             pdfDoc.Add(new Paragraph("Time: " + DateTime.Now.ToString("HH:mm:ss"), regularFont) { Alignment = Element.ALIGN_RIGHT });
                             pdfDoc.Add(new Paragraph(" "));
 
-                            
+                            pdfDoc.Add(new Paragraph($"Buyer: {buyerName}", boldFont));
+                            pdfDoc.Add(new Paragraph($"Phone: {buyerPhone}", boldFont));
+                            pdfDoc.Add(new Paragraph($"Seller ID: {sellerId}", boldFont));
+                            pdfDoc.Add(new Paragraph(" "));
+
                             PdfPTable table = new PdfPTable(4);
                             table.WidthPercentage = 100;
                             table.SetWidths(new float[] { 3f, 1f, 2f, 2f });
 
-                            
                             PdfPCell cell = new PdfPCell(new Phrase("Medicine Name", boldFont));
                             cell.HorizontalAlignment = Element.ALIGN_CENTER;
                             cell.Padding = 5;
@@ -248,7 +263,6 @@ namespace Pharma.Controllers
                             cell.Padding = 5;
                             table.AddCell(cell);
 
-                            
                             foreach (var item in cart)
                             {
                                 table.AddCell(new PdfPCell(new Phrase(item.MedicineName, regularFont)) { Padding = 5 });
@@ -257,7 +271,6 @@ namespace Pharma.Controllers
                                 table.AddCell(new PdfPCell(new Phrase(item.Total.ToString("C"), regularFont)) { Padding = 5, HorizontalAlignment = Element.ALIGN_RIGHT });
                             }
 
-                            
                             PdfPCell emptyCell = new PdfPCell(new Phrase(""));
                             emptyCell.Border = PdfPCell.NO_BORDER;
                             table.AddCell(emptyCell);
@@ -287,7 +300,16 @@ namespace Pharma.Controllers
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        TempData["Error"] = "An error occurred while generating the receipt: " + ex.Message;
+                        var errorMessage = $"An error occurred while generating the receipt: {ex.Message}";
+                        if (ex.InnerException != null)
+                        {
+                            errorMessage += $" Inner Exception: {ex.InnerException.Message}";
+                            if (ex.InnerException.InnerException != null)
+                            {
+                                errorMessage += $" Inner Inner Exception: {ex.InnerException.InnerException.Message}";
+                            }
+                        }
+                        TempData["Error"] = errorMessage;
                         return RedirectToAction("ViewCart");
                     }
                 }
@@ -298,20 +320,6 @@ namespace Pharma.Controllers
                 return RedirectToAction("ViewCart");
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
