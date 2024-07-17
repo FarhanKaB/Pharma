@@ -607,6 +607,46 @@ namespace Pharma.Controllers
             return View();
         }
 
+        public ActionResult GetOrderDetails(int orderId)
+        {
+            var order = db.Orders
+                          .Include(o => o.OrderDetails.Select(od => od.Medicine))
+                          .Include(o => o.Customer)  // Include Customer details
+                          .FirstOrDefault(o => o.OrderID == orderId);
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Return JSON with necessary data
+            return Json(new
+            {
+                order.OrderID,
+                OrderDate = order.OrderDate.ToString("yyyy-MM-dd"),
+                order.TotalPrice,
+                Customer = new
+                {
+                    order.Customer.FullName,
+                    order.Customer.Email,
+                    order.Customer.Phone
+                },
+                OrderDetails = order.OrderDetails.Select(od => new
+                {
+                    od.Medicine.MedicineName,
+                    od.Medicine.GenericName,
+                    od.Medicine.Manufacturer,
+                    od.Medicine.DosageForm,
+                    od.Medicine.Strength,
+                    od.Quantity,
+                    od.Price,
+                    od.Medicine.Category
+                })
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
 
         // Dispose method
         protected override void Dispose(bool disposing)

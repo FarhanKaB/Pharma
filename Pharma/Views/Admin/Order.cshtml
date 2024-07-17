@@ -157,14 +157,16 @@
 
 <!-- Order Details Modal -->
 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Order details content will be dynamically populated here -->
+                <div id="orderDetailsContent">
+                    <!-- Order details content will be dynamically populated here -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -174,6 +176,91 @@
 </div>
 
 <script>
+    // Function to populate order details in a structured table format
+    function populateOrderDetails(orderId, modalBody) {
+        fetch('@Url.Action("GetOrderDetails", "Admin")?orderId=' + orderId)
+            .then(response => response.json())
+            .then(data => {
+                var detailsHtml = `
+                    <h5 class="mb-3">Order Details</h5>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Order ID</th>
+                                <td>${data.OrderID}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Date</th>
+                                <td>${data.OrderDate}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Total Price</th>
+                                <td>${data.TotalPrice}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Customer Name</th>
+                                <td>${data.Customer.FullName}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Email</th>
+                                <td>${data.Customer.Email}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Phone</th>
+                                <td>${data.Customer.Phone}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="mt-4 mb-3">Order Items</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Medicine Name</th>
+                                <th scope="col">Generic Name</th>
+                                <th scope="col">Manufacturer</th>
+                                <th scope="col">Dosage Form</th>
+                                <th scope="col">Strength</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.OrderDetails.map(detail => `
+                                <tr>
+                                    <td>${detail.MedicineName}</td>
+                                    <td>${detail.GenericName}</td>
+                                    <td>${detail.Manufacturer}</td>
+                                    <td>${detail.DosageForm}</td>
+                                    <td>${detail.Strength}</td>
+                                    <td>${detail.Quantity}</td>
+                                    <td>${detail.Price}</td>
+                                    <td>${detail.Category}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                modalBody.innerHTML = detailsHtml;
+            })
+            .catch(error => {
+                modalBody.textContent = 'Error loading order details';
+                console.error('Error fetching order details:', error);
+            });
+    }
+
+    // Event listener for showing modal and populating order details
+    document.getElementById('orderDetailsModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var orderId = button.getAttribute('data-bs-orderid');
+        var modalBody = this.querySelector('.modal-body #orderDetailsContent');
+        modalBody.textContent = 'Loading order details for order ID ' + orderId + '...';
+
+        // Call function to populate order details in a structured table format
+        populateOrderDetails(orderId, modalBody);
+    });
+
+    // Function to handle searching orders by Order ID
     function searchOrders(inputId, tableBodyId) {
         document.getElementById(inputId).addEventListener('keyup', function () {
             let value = this.value.toLowerCase();
@@ -186,12 +273,14 @@
         });
     }
 
+    // Function to update badge count based on visible rows
     function updateBadgeCount(tableBodyId, badgeId) {
         let rows = document.querySelectorAll(`#${tableBodyId} tr`);
         let visibleRows = Array.from(rows).filter(row => row.style.display !== 'none').length;
         document.getElementById(badgeId).textContent = visibleRows;
     }
 
+    // Initialize search functionality for each tab
     searchOrders('searchCompleted', 'completedOrders');
     searchOrders('searchInProcess', 'inProcessOrders');
     searchOrders('searchPending', 'pendingOrders');
@@ -199,13 +288,4 @@
     // Initial badge update
     updateBadgeCount('inProcessOrders', 'inProcessBadge');
     updateBadgeCount('pendingOrders', 'pendingBadge');
-
-    // Order Details Modal Population
-    document.getElementById('orderDetailsModal').addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var orderId = button.getAttribute('data-bs-orderid');
-        var modalBody = this.querySelector('.modal-body');
-        modalBody.textContent = 'Loading order details for order ID ' + orderId + '...';
-        // Fetch and display the order details using AJAX or other methods here
-    });
 </script>
