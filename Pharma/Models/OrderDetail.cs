@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Pharma.Models;
 
 namespace Pharma.Models
 {
+
     public class OrderDetail
     {
         public int OrderDetailID { get; set; }
@@ -13,7 +15,19 @@ namespace Pharma.Models
         public int Quantity { get; set; }
         public decimal Price { get; set; }
 
-        // Navigation property to Medicine
+        // Navigation properties
+        public virtual Order Order { get; set; }
         public virtual Medicine Medicine { get; set; }
     }
+
+    public enum OrderStatus
+    {
+        Pending,
+        InProcess,
+        OutForDelivery,
+        Delivered
+    }
+
+
+
 }

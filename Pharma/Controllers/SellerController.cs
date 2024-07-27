@@ -324,21 +324,51 @@ namespace Pharma.Controllers
 
 
 
+        // GET: Seller/Orders
+        public ActionResult Orders()
+        {
+            var orders = db.Orders.Include("Customer").Include("OrderDetails.Medicine").Where(o => o.Status == OrderStatus.Pending).ToList();
+            return View(orders);
+        }
+
+        // POST: Seller/UpdateOrderStatus
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateOrderStatus(int orderId)
+        {
+            var order = db.Orders.Find(orderId);
+            if (order != null)
+            {
+                if (Session["SellerID"] != null)
+                {
+                    int sellerId = Convert.ToInt32(Session["SellerID"]);
+                    order.SellerID = sellerId;
+                    order.Status = OrderStatus.OutForDelivery;
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = "Order status updated successfully.";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Seller ID not found in session.";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Order not found.";
+            }
+            return RedirectToAction("Orders");
+        }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
 
     }
