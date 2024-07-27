@@ -325,13 +325,31 @@ namespace Pharma.Controllers
 
 
         // GET: Seller/Orders
-        public ActionResult Orders()
+        public ActionResult Orders(int page = 1, int pageSize = 10)
         {
-            var orders = db.Orders.Include("Customer").Include("OrderDetails.Medicine").Where(o => o.Status == OrderStatus.Pending).ToList();
+            // Filtering the orders to only those that are pending
+            var pendingOrders = db.Orders
+                                  .Include("Customer")
+                                  .Include("OrderDetails.Medicine")
+                                  .Where(o => o.Status == OrderStatus.Pending);
+
+            // Calculate total count of pending orders
+            int totalOrders = pendingOrders.Count();
+
+            // Fetch the appropriate subset of orders for the current page
+            var orders = pendingOrders
+                         .OrderBy(o => o.OrderID)
+                         .Skip((page - 1) * pageSize)
+                         .Take(pageSize)
+                         .ToList();
+
+            // Set ViewBag properties for pagination
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            ViewBag.CurrentPage = page;
+
             return View(orders);
         }
 
-        // POST: Seller/UpdateOrderStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateOrderStatus(int orderId)
@@ -339,18 +357,10 @@ namespace Pharma.Controllers
             var order = db.Orders.Find(orderId);
             if (order != null)
             {
-                if (Session["SellerID"] != null)
-                {
-                    int sellerId = Convert.ToInt32(Session["SellerID"]);
-                    order.SellerID = sellerId;
-                    order.Status = OrderStatus.OutForDelivery;
-                    db.SaveChanges();
-                    TempData["SuccessMessage"] = "Order status updated successfully.";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Seller ID not found in session.";
-                }
+                order.Status = OrderStatus.OutForDelivery;
+                order.SellerID = (int)Session["SellerID"]; // Assuming SellerID is stored in Session
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Order marked as Out For Delivery.";
             }
             else
             {
