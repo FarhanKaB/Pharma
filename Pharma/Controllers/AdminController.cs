@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
+using System;
 
 namespace Pharma.Controllers
 {
@@ -597,7 +598,7 @@ namespace Pharma.Controllers
 
             var orders = db.Orders.Include("OrderDetails").ToList();
             var completedOrders = orders.Where(o => o.Status == OrderStatus.Delivered).ToList();
-            var inProcessOrders = orders.Where(o => o.Status == OrderStatus.InProcess).ToList();
+            var inProcessOrders = orders.Where(o => o.Status == OrderStatus.OutForDelivery).ToList();
             var pendingOrders = orders.Where(o => o.Status == OrderStatus.Pending).ToList();
 
             ViewBag.CompletedOrders = completedOrders;
@@ -646,7 +647,36 @@ namespace Pharma.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult Report()
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
 
+            // Total revenue for the current month
+            var totalRevenue = db.Orders
+                .Where(o => o.OrderDate.Month == currentMonth && o.OrderDate.Year == currentYear)
+                .Sum(o => o.TotalPrice);
+
+            // Most sold medicine for the current month
+            var mostSoldMedicineData = db.OrderDetails
+                .Where(od => od.Order.OrderDate.Month == currentMonth && od.Order.OrderDate.Year == currentYear)
+                .GroupBy(od => od.Medicine)
+                .OrderByDescending(g => g.Sum(od => od.Quantity))
+                .Select(g => new
+                {
+                    Medicine = g.Key,
+                    Quantity = g.Sum(od => od.Quantity),
+                    TotalPrice = g.Sum(od => od.Price * od.Quantity)
+                })
+                .FirstOrDefault();
+
+            ViewBag.TotalRevenue = totalRevenue;
+            ViewBag.MostSoldMedicine = mostSoldMedicineData?.Medicine;
+            ViewBag.MostSoldQuantity = mostSoldMedicineData?.Quantity ?? 0;
+            ViewBag.MostSoldTotalPrice = mostSoldMedicineData?.TotalPrice ?? 0;
+
+            return View();
+        }
 
 
         // Dispose method
