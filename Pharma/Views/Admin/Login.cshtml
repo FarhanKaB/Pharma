@@ -5,325 +5,126 @@
     Layout = null; // Optional: If you don't want to use the default layout
 }
 
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>@ViewBag.Title</title>
-    <style>
-
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        body {
-            background-color: #c9d6ff;
-            background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #fff;
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-            position: relative;
-            overflow: hidden;
-            width: 768px;
-            max-width: 100%;
-            min-height: 480px;
-        }
-
-            .container p {
-                font-size: 14px;
-                line-height: 20px;
-                letter-spacing: 0.3px;
-                margin: 20px 0;
-            }
-
-            .container span {
-                font-size: 12px;
-            }
-
-            .container a {
-                color: #333;
-                font-size: 13px;
-                text-decoration: none;
-                margin: 15px 0 10px;
-            }
-
-            .container button {
-                background-color: #512da8;
-                color: #fff;
-                font-size: 12px;
-                padding: 10px 45px;
-                border: 1px solid transparent;
-                border-radius: 8px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-                margin-top: 10px;
-                cursor: pointer;
-            }
-
-                .container button.hidden {
-                    background-color: transparent;
-                    border-color: #fff;
-                }
-
-            .container form {
-                background-color: #fff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                padding: 0 40px;
-                height: 100%;
-            }
-
-            .container input {
-                background-color: #eee;
-                border: none;
-                margin: 8px 0;
-                padding: 10px 15px;
-                font-size: 13px;
-                border-radius: 8px;
-                width: 100%;
-                outline: none;
-            }
-
-        .form-container {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            transition: all 0.6s ease-in-out;
-        }
-
-        .sign-in {
-            left: 0;
-            width: 50%;
-            z-index: 2;
-        }
-
-        .container.active .sign-in {
-            transform: translateX(100%);
-        }
-
-        .sign-up {
-            left: 0;
-            width: 50%;
-            opacity: 0;
-            z-index: 1;
-            transition: all 0.5s;
-        }
-
-        .container.active .sign-up {
-            transform: translateX(100%);
-            opacity: 1;
-            z-index: 5;
-            animation: move 0.6s;
-        }
-
-        @@keyframes move {
-            0%,
-            49.99% {
-                opacity: 0;
-                z-index: 1;
-            }
-
-            50%,
-            100% {
-                opacity: 1;
-                z-index: 5;
-            }
-        }
-
-        .social-icons {
-            margin: 20px 0;
-        }
-
-            .social-icons a {
-                border: 1px solid #ccc;
-                border-radius: 20%;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                margin: 0 3px;
-                width: 40px;
-                height: 40px;
-                transition: all 0.5s;
-            }
-
-                .social-icons a:hover {
-                    scale: 1.3;
-                    border: 1px solid #000;
-                }
-
-        .toggle-container {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 50%;
-            height: 100%;
-            overflow: hidden;
-            transition: all 0.6s ease-in-out;
-            border-radius: 150px 0 0 100px;
-            z-index: 1000;
-        }
-
-        .container.active .toggle-container {
-            transform: translateX(-100%);
-            border-radius: 0 150px 100px 0;
-        }
-
-        .toggle {
-            background-color: #512da8;
-            height: 100%;
-            background: linear-gradient(to right, #5c6bc0, #512da8);
-            color: #fff;
-            position: relative;
-            left: -100%;
-            height: 100%;
-            width: 200%;
-            transform: translateX(0);
-            transition: all 0.6s ease-in-out;
-        }
-
-        .container.active .toggle {
-            transform: translateX(50%);
-        }
-
-        .toggle-panel {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 0 30px;
-            text-align: center;
-            top: 0;
-            transform: translateX(0);
-            transition: all 0.6s ease-in-out;
-        }
-
-        .toggle-left {
-            transform: translateX(-200%);
-        }
-
-        .container.active .toggle-left {
-            transform: translateX(0);
-        }
-
-        .toggle-right {
-            right: 0;
-            transform: translateX(0);
-        }
-
-        .container.active .toggle-right {
-            transform: translateX(200%);
-        }
-    </style>
+    <title>Login Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <div class="container" id="container">
-        <div class="form-container sign-up">
-            @using (Html.BeginForm("Register", "Account", FormMethod.Post))
-            {
-                <h1>Create Account</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
-                <span>or use your email for registration</span>
-                <input type="text" placeholder="Name" name="Name" required>
-                <input type="email" placeholder="Email" name="Email" required>
-                <input type="password" placeholder="Password" name="Password" required>
-                <button type="submit">Sign Up</button>
-            }
-        </div>
-        <div class="form-container sign-in">
-            @using (Html.BeginForm("Login", "Admin", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                <h1>Sign In</h1>
-                <div class="social-icons">
-                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
-                </div>
+<body class="bg-white dark:bg-gray-900">
+    <section class="container @*px-6 py-24*@ px-6 lg:px-12 mx-auto lg:py-32">
+        <div class="lg:flex ">
+            <div class="lg:w-1/2">
+                <span class="text-3xl font-bold text-purple-900">Pharma.</span>
 
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Username)
-                    @Html.TextBox("username", null, new { @class = "form-control" })
-                </div>
+                <h1 class="mt-4 text-gray-600 dark:text-gray-300 md:text-lg">Welcome back</h1>
 
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password)
-                    @Html.Password("password", null, new { @class = "form-control" })
-                </div>
+                <h1 class="mt-4 text-2xl font-medium text-gray-800 capitalize lg:text-3xl dark:text-white">
+                    Login to your account
+                </h1>
 
-                <a href="#">→ Forget Your Password? ←</a>
-                <button type="submit" class="btn btn-primary">Sign In</button>
-                <div>
-                    <span class="user-type">Are you a seller? </span>
-                    @Html.ActionLink("Login", "SellerLogin", "Seller", new { area = "" }, new { @class = "login-link seller-login" })
-                </div>
-                <div>
-                    <span class="user-type">Are you a customer? </span>
-                    @Html.ActionLink("Login", "UserLogin", "User", new { area = "" }, new { @class = "login-link user-login" })
-                </div>
-
-                
-
-            }
-        </div>
-
-        <div class="toggle-container">
-            <div class="toggle">
-                <div class="toggle-panel toggle-left">
-                    <h1>Welcome Back!</h1>
-                    <p>Enter your personal details to use all of the site features</p>
-                    <button class="hidden" id="login">Sign In</button>
-                </div>
-                <div class="toggle-panel toggle-right">
-                    <h1>Welcome, Admin!</h1>
-                    <p>The ideal of medicine is to eliminate the need of a physician</p>
-                    @*<button class="hidden" id="register">Sign Up</button>*@
+                <div class="mt-4">
+                    <a href="/seller-login" class="text-blue-500 hover:underline">Seller</a> |
+                    <a href="/customer-login" class="text-blue-500 hover:underline">Customer</a>
                 </div>
             </div>
+
+
+            <div class="mt-8 lg:w-1/2 lg:mt-0">
+                @using (Html.BeginForm("Login", "Admin", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="relative flex items-center">
+                        <span class="absolute">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </span>
+
+                        @Html.TextBoxFor(m => m.Username, new { @class = "block w-full py-3 text-gray-700 bg-white border rounded-lg px-11 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40", placeholder = "Username" })
+                    </div>
+
+                    <div class="relative flex items-center mt-4">
+                        <span class="absolute">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-3 text-gray-300 dark:text-gray-500"
+                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </span>
+
+                        @Html.PasswordFor(m => m.Password, new { @class = "block w-full px-10 py-3 text-gray-700 bg-white border rounded-lg dark:bg-gray-900 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40", placeholder = "Password" })
+                    </div>
+
+                    <div class="mt-8 md:flex md:items-center">
+                        <button type="submit"
+                                class="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg md:w-1/2 hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+                            Sign in
+                        </button>
+
+                        <a href="#"
+                           class="inline-block mt-4 text-center text-blue-500 md:mt-0 md:mx-6 hover:underline dark:text-blue-400">
+                            Forgot your password?
+                        </a>
+                    </div>
+                }
+
+            </div>
         </div>
-    </div>
 
-    <script>
-        const container = document.getElementById('container');
-        const registerBtn = document.getElementById('register');
-        const loginBtn = document.getElementById('login');
+        <div class="mt-8 md:mt-24 sm:flex sm:items-center">
+            <h3 class="text-blue-500 dark:text-blue-400 sm:w-1/2">Social networks</h3>
 
-        registerBtn.addEventListener('click', () => {
-            container.classList.add("active");
-        });
+            <div class="flex items-center mt-4 sm:mt-0 -mx-1.5 sm:w-1/2">
+                <a class="mx-1.5 dark:hover:text-blue-400 text-gray-400 transition-colors duration-300 transform hover:text-blue-500"
+                   href="#">
+                    <svg class="w-10 h-10 fill-current" viewBox="0 0 24 24" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.6668 6.67334C18.0002 7.00001 17.3468 7.13268 16.6668 7.33334C15.9195 6.49001 14.8115 6.44334 13.7468 6.84201C12.6822 7.24068 11.9848 8.21534 12.0002 9.33334V10C9.83683 10.0553 7.91016 9.07001 6.66683 7.33334C6.66683 7.33334 3.87883 12.2887 9.3335 14.6667C8.0855 15.498 6.84083 16.0587 5.3335 16C7.53883 17.202 9.94216 17.6153 12.0228 17.0113C14.4095 16.318 16.3708 14.5293 17.1235 11.85C17.348 11.0351 17.4595 10.1932 17.4548 9.34801C17.4535 9.18201 18.4615 7.50001 18.6668 6.67268V6.67334Z" />
+                    </svg>
+                </a>
 
-        loginBtn.addEventListener('click', () => {
-            container.classList.remove("active");
-        });
-    </script>
+                <a class="mx-1.5 dark:hover:text-blue-400 text-gray-400 transition-colors duration-300 transform hover:text-blue-500"
+                   href="#">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.2 8.80005C16.4731 8.80005 17.694 9.30576 18.5941 10.2059C19.4943 11.1061 20 12.327 20 13.6V19.2H16.8V13.6C16.8 13.1757 16.6315 12.7687 16.3314 12.4687C16.0313 12.1686 15.6244 12 15.2 12C14.7757 12 14.3687 12.1686 14.0687 12.4687C13.7686 12.7687 13.6 13.1757 13.6 13.6V19.2H10.4V13.6C10.4 12.327 10.9057 11.1061 11.8059 10.2059C12.7061 9.30576 13.927 8.80005 15.2 8.80005Z"
+                              fill="currentColor" />
+                        <path d="M7.2 9.6001H4V19.2001H7.2V9.6001Z"
+                              fill="currentColor" />
+                        <path d="M5.6 7.2C6.48366 7.2 7.2 6.48366 7.2 5.6C7.2 4.71634 6.48366 4 5.6 4C4.71634 4 4 4.71634 4 5.6C4 6.48366 4.71634 7.2 5.6 7.2Z"
+                              fill="currentColor" />
+                    </svg>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="w-full bg-white">
+        <div class="container flex flex-col items-center px-8 py-12 mx-auto max-w-7xl">
+            <nav class="flex flex-wrap justify-center">
+                <a href="/" class="mr-5 text-base leading-6 text-gray-400 hover:text-gray-600">Home</a>
+                <a href="/aboutus" class="mr-5 text-base leading-6 text-gray-400 hover:text-gray-600">About Us</a>
+                <a href="/contact" class="mr-5 text-base leading-6 text-gray-400 hover:text-gray-600">Contact</a>
+                <a href="/shop" class="text-base leading-6 text-gray-400 hover:text-gray-600">Shop</a>
+            </nav>
+            <p class="mt-2 text-base leading-6 text-center text-gray-400">
+                &copy; 2024 Pharma. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+
 </body>
 
 </html>
+
