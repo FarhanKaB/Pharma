@@ -54,8 +54,9 @@ namespace Pharma.Controllers
                 TotalUsers = db.Customers.Count(),
                 TotalMedicines = db.Medicines.Count(),
                 TotalOrders = db.Orders.Count(), // Updated to get actual order count
-                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).Take(10).ToList()
-            };
+                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).ToList()
+
+        };
             return View(viewModel);
         }
 
