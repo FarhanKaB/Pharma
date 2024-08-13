@@ -209,10 +209,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SellerController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -230,9 +228,7 @@
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Receipt.cs" />
-    <Compile Include="Models\Request.cs" />
     <Compile Include="Models\Seller.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -286,21 +282,11 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Admin\Login.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\CreateMedicine.cshtml" />
-    <Content Include="Views\Admin\EditMedicine.cshtml" />
-    <Content Include="Views\Admin\Dashboard.cshtml" />
     <Content Include="Views\Seller\SellerLogin.cshtml" />
     <Content Include="Views\Seller\Dashboard.cshtml" />
     <Content Include="Views\Seller\ViewMedicines.cshtml" />
     <Content Include="Views\Seller\ViewCart.cshtml" />
     <Content Include="Views\Seller\Receipt.cshtml" />
-    <Content Include="Views\User\UserLogin.cshtml" />
-    <Content Include="Views\User\Dashboard.cshtml" />
-    <Content Include="Views\User\ViewMedicines.cshtml" />
-    <Content Include="Views\User\RequestMedicine.cshtml" />
-    <Content Include="Views\Shared\_NewLayout.cshtml" />
     <Content Include="Views\Shared\_SellerLayout.cshtml" />
     <Content Include="Views\Seller\ViewReceipts.cshtml" />
     <Content Include="Views\Seller\Orders.cshtml" />
