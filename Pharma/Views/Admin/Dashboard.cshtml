@@ -48,19 +48,20 @@
                         <div class="card-body">
                             <a href="@Url.Action("ManageSeller", "Admin")" class="list-group-item list-group-item-action">Manage Roles & Permissions</a>
                             <a href="@Url.Action("RegisterSellerAccount", "Admin")" class="list-group-item list-group-item-action">Register Seller</a>
-                            <a href="@Url.Action("Report", "Admin")" class="list-group-item list-group-item-action">View Request</a>
+                            <a href="@Url.Action("#", "Admin")" class="list-group-item list-group-item-action">View Request</a>
                         </div>
                     </div>
-                   @* <div class="card mt-3">
+                   <div class="card mt-3">
                         <div class="card-header bg-secondary text-white">
-                            Report Management
+                            Sales Overview
                         </div>
                         <div class="card-body">
-                            <a href="@Url.Action("Index", "Report")" class="list-group-item list-group-item-action">View Reports</a>
-                            <a href="@Url.Action("Generate", "Report")" class="list-group-item list-group-item-action">Generate Report</a>
-                            <a href="@Url.Action("Analytics", "Report")" class="list-group-item list-group-item-action">Analytics</a>
+                            <a href="@Url.Action("Report", "Admin")" class="list-group-item list-group-item-action">Sales Report</a>
+                            <a href="@Url.Action("DataAnalysis", "Admin")" class="list-group-item list-group-item-action">Sales Analytics</a>
+                            <a href="@Url.Action("MedicineAnalysis", "Admin")" class="list-group-item list-group-item-action">Medicine Analytics</a>
+
                         </div>
-                    </div>*@
+                    </div>
                    
                 </div>
 
@@ -112,15 +113,15 @@
                         <div class="col-md-3 mt-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h2><i class="fa-solid fa-truck-fast"></i> 28</h2>
-                                    <h4>Orders</h4>
+                                    <h2><i class="fa-solid fa-truck-fast"></i> @ViewBag.OutForDeliveryOrdersCount</h2>
+                                    <h4>On Delivery</h4>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3 mt-3">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <h2><i class="fa-solid fa-hourglass-half"></i> 28</h2>
+                                    <h2><i class="fa-solid fa-hourglass-half"></i> @ViewBag.PendingOrdersCount</h2>
                                     <h4>Pending</h4>
                                 </div>
                             </div>

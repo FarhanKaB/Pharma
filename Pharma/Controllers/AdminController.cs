@@ -63,13 +63,19 @@ namespace Pharma.Controllers
             var totalCustomers = db.Customers.Count();
             var uniqueMedicines = db.Medicines.Select(m => m.MedicineID).Distinct().Count();
 
+            var pendingOrdersCount = db.Orders.Count(o => o.Status == OrderStatus.Pending);
+            var outForDeliveryOrdersCount = db.Orders.Count(o => o.Status == OrderStatus.OutForDelivery);
+
             ViewBag.TotalSellers = totalSellers;
             ViewBag.TotalMedicines = totalMedicines;
             ViewBag.TotalCustomers = totalCustomers;
             ViewBag.UniqueMedicines = uniqueMedicines;
+            ViewBag.PendingOrdersCount = pendingOrdersCount;
+            ViewBag.OutForDeliveryOrdersCount = outForDeliveryOrdersCount;
 
             return View();
         }
+
 
         // GET and POST: Admin/Admin_Inventory
         public ActionResult Admin_Inventory()
@@ -647,36 +653,358 @@ namespace Pharma.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Report()
+        public ActionResult Report(string timePeriod)
         {
-            var currentMonth = DateTime.Now.Month;
-            var currentYear = DateTime.Now.Year;
+            var currentDate = DateTime.Now;
 
-            // Total revenue for the current month
-            var totalRevenue = db.Orders
-                .Where(o => o.OrderDate.Month == currentMonth && o.OrderDate.Year == currentYear)
-                .Sum(o => o.TotalPrice);
+            // Calculate date ranges based on the selected time period
+            var dateRange = GetDateRange(timePeriod, currentDate);
 
-            // Most sold medicine for the current month
-            var mostSoldMedicineData = db.OrderDetails
-                .Where(od => od.Order.OrderDate.Month == currentMonth && od.Order.OrderDate.Year == currentYear)
-                .GroupBy(od => od.Medicine)
-                .OrderByDescending(g => g.Sum(od => od.Quantity))
+            // Fetch and process the data based on the date range
+            var mostSoldOnlineMedicines = db.OrderDetails
+                .Where(od => od.Order.Status == OrderStatus.Delivered && od.Order.SellerID.HasValue &&
+                              od.Order.OrderDate >= dateRange.Item1 && od.Order.OrderDate <= dateRange.Item2)
+                .GroupBy(od => od.MedicineID)
                 .Select(g => new
                 {
-                    Medicine = g.Key,
-                    Quantity = g.Sum(od => od.Quantity),
-                    TotalPrice = g.Sum(od => od.Price * od.Quantity)
+                    Medicine = db.Medicines.FirstOrDefault(m => m.MedicineID == g.Key),
+                    TotalQuantitySold = g.Sum(od => od.Quantity)
                 })
-                .FirstOrDefault();
+                .OrderByDescending(x => x.TotalQuantitySold)
+                .Take(5)
+                .ToList();
 
-            ViewBag.TotalRevenue = totalRevenue;
-            ViewBag.MostSoldMedicine = mostSoldMedicineData?.Medicine;
-            ViewBag.MostSoldQuantity = mostSoldMedicineData?.Quantity ?? 0;
-            ViewBag.MostSoldTotalPrice = mostSoldMedicineData?.TotalPrice ?? 0;
+            var onlineMedicinesViewModel = mostSoldOnlineMedicines.Select(m => new MostSoldMedicineViewModel
+            {
+                MedicineName = m.Medicine.MedicineName,
+                QuantitySold = m.TotalQuantitySold,
+                Price = m.Medicine.Price,
+                AvailableAmount = m.Medicine.Quantity,
+                Status = GetStockStatus(m.Medicine.Quantity)
+            }).ToList();
 
-            return View();
+            var mostSoldInStoreMedicines = db.ReceiptItems
+                .Where(ri => ri.Receipt.DateCreated >= dateRange.Item1 && ri.Receipt.DateCreated <= dateRange.Item2)
+                .GroupBy(ri => ri.MedicineID)
+                .Select(g => new
+                {
+                    Medicine = db.Medicines.FirstOrDefault(m => m.MedicineID == g.Key),
+                    TotalQuantitySold = g.Sum(ri => ri.Quantity)
+                })
+                .OrderByDescending(x => x.TotalQuantitySold)
+                .Take(5)
+                .ToList();
+
+            var inStoreMedicinesViewModel = mostSoldInStoreMedicines.Select(m => new MostSoldMedicineViewModel
+            {
+                MedicineName = m.Medicine.MedicineName,
+                QuantitySold = m.TotalQuantitySold,
+                Price = m.Medicine.Price,
+                AvailableAmount = m.Medicine.Quantity,
+                Status = GetStockStatus(m.Medicine.Quantity)
+            }).ToList();
+
+            var onlineSoldMedicines = db.OrderDetails
+                .Where(od => od.Order.Status == OrderStatus.Delivered && od.Order.SellerID.HasValue &&
+                              od.Order.OrderDate >= dateRange.Item1 && od.Order.OrderDate <= dateRange.Item2)
+                .GroupBy(od => od.MedicineID)
+                .Select(g => new
+                {
+                    MedicineID = g.Key,
+                    QuantitySold = g.Sum(od => od.Quantity)
+                })
+                .ToList();
+
+            var inStoreSoldMedicines = db.ReceiptItems
+                .Where(ri => ri.Receipt.DateCreated >= dateRange.Item1 && ri.Receipt.DateCreated <= dateRange.Item2)
+                .GroupBy(ri => ri.MedicineID)
+                .Select(g => new
+                {
+                    MedicineID = g.Key,
+                    QuantitySold = g.Sum(ri => ri.Quantity)
+                })
+                .ToList();
+
+            var overallSoldMedicines = onlineSoldMedicines
+                .Union(inStoreSoldMedicines)
+                .GroupBy(x => x.MedicineID)
+                .Select(g => new
+                {
+                    Medicine = db.Medicines.FirstOrDefault(m => m.MedicineID == g.Key),
+                    TotalQuantitySold = g.Sum(x => x.QuantitySold)
+                })
+                .OrderByDescending(x => x.TotalQuantitySold)
+                .Take(5)
+                .ToList();
+
+            var overallMedicinesViewModel = overallSoldMedicines.Select(m => new MostSoldMedicineViewModel
+            {
+                MedicineName = m.Medicine.MedicineName,
+                QuantitySold = m.TotalQuantitySold,
+                Price = m.Medicine.Price,
+                AvailableAmount = m.Medicine.Quantity,
+                Status = GetStockStatus(m.Medicine.Quantity)
+            }).ToList();
+
+            var totalOnlineRevenue = db.Orders
+    .Where(o => o.Status == OrderStatus.Delivered && o.SellerID.HasValue &&
+                o.OrderDate >= dateRange.Item1 && o.OrderDate <= dateRange.Item2)
+    .Sum(o => (decimal?)o.TotalPrice) ?? 0;
+
+            var totalInStoreRevenue = db.Receipts
+                .Where(r => r.DateCreated >= dateRange.Item1 && r.DateCreated <= dateRange.Item2)
+                .Sum(r => (decimal?)r.TotalAmount) ?? 0;
+
+            var totalRevenue = totalOnlineRevenue + totalInStoreRevenue;
+
+            var totalOrders = db.Orders
+                .Where(o => o.OrderDate >= dateRange.Item1 && o.OrderDate <= dateRange.Item2)
+                .Select(o => o.OrderID)
+                .Distinct()
+                .Count();
+
+            var completedOrders = db.Orders
+                .Where(o => o.Status == OrderStatus.Delivered && o.SellerID.HasValue &&
+                             o.OrderDate >= dateRange.Item1 && o.OrderDate <= dateRange.Item2)
+                .Select(o => o.OrderID)
+                .Distinct()
+                .Count();
+
+            var pendingOrders = db.Orders
+                .Where(o => o.Status != OrderStatus.Delivered && o.SellerID.HasValue &&
+                             o.OrderDate >= dateRange.Item1 && o.OrderDate <= dateRange.Item2)
+                .Select(o => o.OrderID)
+                .Distinct()
+                .Count();
+
+            var combinedViewModel = new CombinedReportViewModel
+            {
+                OnlineMedicines = onlineMedicinesViewModel,
+                InStoreMedicines = inStoreMedicinesViewModel,
+                OverallMedicines = overallMedicinesViewModel,
+                TotalOnlineRevenue = totalOnlineRevenue,
+                TotalInStoreRevenue = totalInStoreRevenue,
+                TotalRevenue = totalRevenue,
+                TotalOrders = totalOrders,
+                CompletedOrders = completedOrders,
+                PendingOrders = pendingOrders
+            };
+
+            ViewBag.TimePeriod = timePeriod;
+
+            return View(combinedViewModel);
         }
+
+        private (DateTime, DateTime) GetDateRange(string timePeriod, DateTime currentDate)
+        {
+            DateTime startDate;
+            DateTime endDate = currentDate;
+
+            switch (timePeriod)
+            {
+                case "Last 15 Days":
+                    startDate = currentDate.AddDays(-15);
+                    break;
+                case "Last 7 Days":
+                    startDate = currentDate.AddDays(-7);
+                    break;
+                case "Last Month":
+                    startDate = new DateTime(currentDate.Year, currentDate.Month - 1, 1);
+                    endDate = startDate.AddMonths(1).AddDays(-1);
+                    break;
+                case "Current Month":
+                default:
+                    startDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+                    endDate = currentDate;
+                    break;
+            }
+
+            return (startDate, endDate);
+        }
+
+        private string GetStockStatus(int availableAmount)
+        {
+            if (availableAmount > 10)
+                return "In Stock";
+            if (availableAmount > 0)
+                return "Low Stock";
+            return "Out of Stock";
+        }
+
+
+        public ActionResult DataAnalysis(int year = 2024, int month = 1)
+        {
+            // Fetch and aggregate online data for the selected year
+            var yearlyOnlineData = db.Orders
+                .Where(o => o.OrderDate.Year == year)
+                .GroupBy(o => o.OrderDate.Month)
+                .Select(g => new MonthData
+                {
+                    Month = g.Key,
+                    Online = g.Sum(o => o.TotalPrice)
+                })
+                .ToList();
+
+            // Fetch and aggregate online data for the selected month
+            var monthlyOnlineData = db.Orders
+                .Where(o => o.OrderDate.Year == year && o.OrderDate.Month == month)
+                .GroupBy(o => o.OrderDate.Day)
+                .Select(g => new DayData
+                {
+                    Day = g.Key,
+                    Online = g.Sum(o => o.TotalPrice)
+                })
+                .ToList();
+
+            // Fetch and aggregate retail data for the selected year
+            var yearlyRetailData = db.Receipts
+                .Where(r => r.DateCreated.Year == year)
+                .GroupBy(r => r.DateCreated.Month)
+                .Select(g => new MonthData
+                {
+                    Month = g.Key,
+                    Retail = g.Sum(r => r.TotalAmount)
+                })
+                .ToList();
+
+            // Fetch and aggregate retail data for the selected month
+            var monthlyRetailData = db.Receipts
+                .Where(r => r.DateCreated.Year == year && r.DateCreated.Month == month)
+                .GroupBy(r => r.DateCreated.Day)
+                .Select(g => new DayData
+                {
+                    Day = g.Key,
+                    Retail = g.Sum(r => r.TotalAmount)
+                })
+                .ToList();
+
+            // Merge yearly online and retail data
+            var yearlyData = yearlyOnlineData.Union(yearlyRetailData)
+                .GroupBy(d => d.Month)
+                .Select(g => new MonthData
+                {
+                    Month = g.Key,
+                    Online = g.FirstOrDefault(d => d.Online.HasValue)?.Online ?? 0,
+                    Retail = g.FirstOrDefault(d => d.Retail.HasValue)?.Retail ?? 0
+                })
+                .ToList();
+
+            // Merge monthly online and retail data
+            var monthlyData = monthlyOnlineData.Union(monthlyRetailData)
+                .GroupBy(d => d.Day)
+                .Select(g => new DayData
+                {
+                    Day = g.Key,
+                    Online = g.FirstOrDefault(d => d.Online.HasValue)?.Online ?? 0,
+                    Retail = g.FirstOrDefault(d => d.Retail.HasValue)?.Retail ?? 0
+                })
+                .ToList();
+
+            // Prepare data for view
+            var viewModel = new SalesTrendsViewModel
+            {
+                YearlyOnlineData = yearlyData,
+                MonthlyOnlineData = monthlyData,
+                YearlyRetailData = yearlyData,
+                MonthlyRetailData = monthlyData
+            };
+
+            if (Request.IsAjaxRequest())
+            {
+                return Json(viewModel, JsonRequestBehavior.AllowGet);
+            }
+
+            return View(viewModel);
+        }
+
+
+        public ActionResult MedicineAnalysis(int year = 2024, int month = 1)
+        {
+            // Fetch online sales data for the selected year
+            var yearlyOnlineData = db.Orders
+                .Where(o => o.OrderDate.Year == year && o.Status == OrderStatus.Delivered)
+                .SelectMany(o => o.OrderDetails)
+                .GroupBy(od => od.Order.OrderDate.Month)
+                .Select(g => new MonthSalesData
+                {
+                    Month = g.Key,
+                    OnlineSales = g.Sum(od => od.Quantity)
+                })
+                .ToList();
+
+            // Fetch online sales data for the selected month
+            var monthlyOnlineData = db.Orders
+                .Where(o => o.OrderDate.Year == year && o.OrderDate.Month == month && o.Status == OrderStatus.Delivered)
+                .SelectMany(o => o.OrderDetails)
+                .GroupBy(od => od.Order.OrderDate.Day)
+                .Select(g => new DaySalesData
+                {
+                    Day = g.Key,
+                    OnlineSales = g.Sum(od => od.Quantity)
+                })
+                .ToList();
+
+            // Fetch retail sales data for the selected year
+            var yearlyRetailData = db.ReceiptItems
+                .Where(r => r.Receipt.DateCreated.Year == year)
+                .GroupBy(r => r.Receipt.DateCreated.Month)
+                .Select(g => new MonthSalesData
+                {
+                    Month = g.Key,
+                    RetailSales = g.Sum(r => r.Quantity)
+                })
+                .ToList();
+
+            // Fetch retail sales data for the selected month
+            var monthlyRetailData = db.ReceiptItems
+                .Where(r => r.Receipt.DateCreated.Year == year && r.Receipt.DateCreated.Month == month)
+                .GroupBy(r => r.Receipt.DateCreated.Day)
+                .Select(g => new DaySalesData
+                {
+                    Day = g.Key,
+                    RetailSales = g.Sum(r => r.Quantity)
+                })
+                .ToList();
+
+            // Merge yearly online and retail data
+            var yearlyData = yearlyOnlineData
+                .Union(yearlyRetailData)
+                .GroupBy(d => d.Month)
+                .Select(g => new MonthSalesData
+                {
+                    Month = g.Key,
+                    OnlineSales = g.FirstOrDefault(d => d.OnlineSales > 0)?.OnlineSales ?? 0,
+                    RetailSales = g.FirstOrDefault(d => d.RetailSales > 0)?.RetailSales ?? 0
+                })
+                .ToList();
+
+            // Merge monthly online and retail data
+            var monthlyData = monthlyOnlineData
+                .Union(monthlyRetailData)
+                .GroupBy(d => d.Day)
+                .Select(g => new DaySalesData
+                {
+                    Day = g.Key,
+                    OnlineSales = g.FirstOrDefault(d => d.OnlineSales > 0)?.OnlineSales ?? 0,
+                    RetailSales = g.FirstOrDefault(d => d.RetailSales > 0)?.RetailSales ?? 0
+                })
+                .ToList();
+
+            // Prepare data for view
+            var viewModel = new MedicineSalesViewModel
+            {
+                YearlySalesData = yearlyData,
+                MonthlySalesData = monthlyData
+            };
+
+            if (Request.IsAjaxRequest())
+            {
+                return Json(viewModel, JsonRequestBehavior.AllowGet);
+            }
+
+            return View(viewModel);
+        }
+
 
 
         // Dispose method

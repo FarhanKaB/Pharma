@@ -1,9 +1,27 @@
-﻿@{
-    ViewBag.Title = "Sales Dashboard";
+﻿@model CombinedReportViewModel
+@{
+    ViewBag.Title = "Report";
     Layout = "~/Views/Shared/_NewLayout.cshtml"; // Assuming a shared layout is used
 }
 
 <div class="container mt-4">
+    <!-- Single Dropdown for Time Period Selection -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">Select Time Period</h6>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonTimePeriod" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Time Period
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTimePeriod">
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="onTimePeriodChange('Current Month')">Current Month</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="onTimePeriodChange('Last 15 Days')">Last 15 Days</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="onTimePeriodChange('Last 7 Days')">Last 7 Days</a></li>
+                <li><a class="dropdown-item" href="javascript:void(0);" onclick="onTimePeriodChange('Last Month')">Last Month</a></li>
+            </ul>
+        </div>
+
+    </div>
+
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -12,377 +30,204 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Sales</a>
         </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Customer</a>
-        </li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content mt-4">
         <!-- Revenue Tab -->
         <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-            <!-- Header with Title and Dropdown for Time Period Selection -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonRevenue" data-bs-toggle="dropdown" aria-expanded="false">
-                        Select Time Period
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonRevenue">
-                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                    </ul>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <div class="card border-success shadow-sm">
                         <div class="card-body">
                             <h6 class="card-title text-uppercase font-weight-bold">Total Revenue</h6>
-                            <h3 class="card-text mb-1">$3.33M</h3>
-                            <p class="text-success mb-0">+15% vs yesterday</p>
+                            <h3 class="card-text mb-1">@Model.TotalRevenue.ToString("C")</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card border-info shadow-sm">
                         <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">Online Sales</h6>
-                            <h3 class="card-text mb-1">7,410</h3>
-                            <p class="text-info mb-0">+20% vs yesterday</p>
+                            <h6 class="card-title text-uppercase font-weight-bold">Online Sales Revenue</h6>
+                            <h3 class="card-text mb-1">@Model.TotalOnlineRevenue.ToString("C")</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card border-warning shadow-sm">
                         <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">In-Store Sales</h6>
-                            <h3 class="card-text mb-1">$449.40</h3>
-                            <p class="text-warning mb-0">+42% vs yesterday</p>
+                            <h6 class="card-title text-uppercase font-weight-bold">In-Store Sales Revenue</h6>
+                            <h3 class="card-text mb-1">@Model.TotalInStoreRevenue.ToString("C")</h3>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Orders Tab -->
+        <!-- Sales Tab -->
         <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-            <!-- Header with Title and Dropdown for Time Period Selection -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonOrders" data-bs-toggle="dropdown" aria-expanded="false">
-                        Select Time Period
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonOrders">
-                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                    </ul>
-                </div>
-            </div>
             <div class="row">
-                <div class="col-md-3 mb-4">
+                <div class="col-md-4 mb-4">
                     <div class="card border-primary shadow-sm">
                         <div class="card-body">
                             <h6 class="card-title text-uppercase font-weight-bold">Total Orders</h6>
-                            <h3 class="card-text mb-1">1,234</h3>
-                            <p class="text-primary mb-0">+10% vs yesterday</p>
+                            <h3 class="card-text mb-1">@Model.TotalOrders</h3>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-4 mb-4">
                     <div class="card border-success shadow-sm">
                         <div class="card-body">
                             <h6 class="card-title text-uppercase font-weight-bold">Completed Orders</h6>
-                            <h3 class="card-text mb-1">1,100</h3>
-                            <p class="text-success mb-0">+5% vs yesterday</p>
+                            <h3 class="card-text mb-1">@Model.CompletedOrders</h3>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
+                <div class="col-md-4 mb-4">
                     <div class="card border-warning shadow-sm">
-                        <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">Pending Orders</h6>
-                            <h3 class="card-text mb-1">
-                                134</h6>
-                                <p class="text-warning mb-0">-2% vs yesterday</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-info shadow-sm">
                         <div class="card-body">
                             <h6 class="card-title text-uppercase font-weight-bold">In-Store Purchases</h6>
-                            <h3 class="card-text mb-1">345</h3>
-                            <p class="text-info mb-0">+12% vs yesterday</p>
+                            <h3 class="card-text mb-1">@Model.InStoreMedicines.Sum(m => m.QuantitySold)</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title text-uppercase font-weight-bold">Pending Orders</h6>
+                            <h3 class="card-text mb-1">@Model.PendingOrders</h3>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Customer Tab -->
-        <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-            <!-- Header with Title and Dropdown for Time Period Selection -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-               
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonCustomer" data-bs-toggle="dropdown" aria-expanded="false">
-                        Select Time Period
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonCustomer">
-                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <div class="card border-primary shadow-sm">
-                        <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">Total Customers</h6>
-                            <h3 class="card-text mb-1">5,678</h3>
-                            <p class="text-primary mb-0">+8% vs last month</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-success shadow-sm">
-                        <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">Active Customers</h6>
-                            <h3 class="card-text mb-1">4,321</h3>
-                            <p class="text-success mb-0">+10% vs last month</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-warning shadow-sm">
-                        <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">New Customers</h6>
-                            <h3 class="card-text mb-1">123</h3>
-                            <p class="text-warning mb-0">+15% vs last month</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="card border-info shadow-sm">
-                        <div class="card-body">
-                            <h6 class="card-title text-uppercase font-weight-bold">Returning Customers</h6>
-                            <h3 class="card-text mb-1">321</h3>
-                            <p class="text-info mb-0">+5% vs last month</p>
+    <!-- Most Sold Online Medicine Table -->
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Most Sold Online Medicine</h6>
+                        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-hover table-bordered" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity Sold</th>
+                                        <th>Price</th>
+                                        <th>Available Amount</th>
+                                        <th>Status</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OnlineMedicines)
+                                    {
+                                        <tr>
+                                            <td>@item.MedicineName</td>
+                                            <td>@item.QuantitySold</td>
+                                            <td>$@item.Price.ToString("F2")</td>
+                                            <td>@item.AvailableAmount</td>
+                                            <td>
+                                                <span class="badge @(item.Status == "In Stock" ? "bg-success" : (item.Status == "Low Stock" ? "bg-warning" : "bg-danger"))">
+                                                    @item.Status
+                                                </span>
+                                            </td>
+                                            <td><a href="#" class="text-primary">View Details</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Most Overall Sold Medicine Table -->
-        <div class="container-fluid mb-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <!-- Header with Title and Dropdown for Time Period Selection -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="card-title mb-0">Most Overall Sold Medicine</h6>
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonMostOverall" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select Time Period
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonMostOverall">
-                                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                                <table class="table table-hover table-bordered" style="width: 100%;">
-                                    <thead>
+    <!-- Most Sold In-Store Medicine Table -->
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Most Sold In-Store Medicine</h6>
+                        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-hover table-bordered" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity Sold</th>
+                                        <th>Price</th>
+                                        <th>Available Amount</th>
+                                        <th>Status</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.InStoreMedicines)
+                                    {
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Orders</th>
-                                            <th>Retail</th>
-                                            <th>Quantity Sold</th>
-                                            <th>Price</th>
-                                            <th>Available Amount</th>
-                                            <th>Status</th>
-                                            <th>Info</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Paracetamol</td>
-                                            <td>100</td>
-                                            <td>250</td>
-                                            <td>250</td>
-                                            <td>$20.00</td>
-                                            <td>80</td>
-                                            <td><span class="badge bg-warning">Low Stock</span></td>
+                                            <td>@item.MedicineName</td>
+                                            <td>@item.QuantitySold</td>
+                                            <td>$@item.Price.ToString("F2")</td>
+                                            <td>@item.AvailableAmount</td>
+                                            <td>
+                                                <span class="badge @(item.Status == "In Stock" ? "bg-success" : (item.Status == "Low Stock" ? "bg-warning" : "bg-danger"))">
+                                                    @item.Status
+                                                </span>
+                                            </td>
                                             <td><a href="#" class="text-primary">View Details</a></td>
                                         </tr>
-                                        <tr>
-                                            <td>Amoxicillin</td>
-                                            <td>50</td>
-                                            <td>100</td>
-                                            <td>250</td>
-                                            <td>$10.00</td>
-                                            <td>200</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Least Overall Sold Medicine Table -->
-        <div class="container-fluid mb-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <!-- Header with Title and Dropdown for Time Period Selection -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="card-title mb-0">Most Sold Online Medicine</h6>
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonLeastOverall" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select Time Period
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonLeastOverall">
-                                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                                <table class="table table-hover table-bordered" style="width: 100%;">
-                                    <thead>
+    <!-- Most Overall Sold Medicine Table -->
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title mb-0">Most Overall Sold Medicine</h6>
+                        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-hover table-bordered" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity Sold</th>
+                                        <th>Price</th>
+                                        <th>Available Amount</th>
+                                        <th>Status</th>
+                                        <th>Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OverallMedicines)
+                                    {
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Orders</th>
-                                            <th>Quantity Sold</th>
-                                            <th>Price</th>
-                                            <th>Available Amount</th>
-                                            <th>Status</th>
-                                            <th>Info</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Ibuprofen</td>
-                                            <td>10</td>
-                                            <td>50</td>
-                                            <td>$5.00</td>
-                                            <td>500</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
+                                            <td>@item.MedicineName</td>
+                                            <td>@item.QuantitySold</td>
+                                            <td>$@item.Price.ToString("F2")</td>
+                                            <td>@item.AvailableAmount</td>
+                                            <td>
+                                                <span class="badge @(item.Status == "In Stock" ? "bg-success" : (item.Status == "Low Stock" ? "bg-warning" : "bg-danger"))">
+                                                    @item.Status
+                                                </span>
+                                            </td>
                                             <td><a href="#" class="text-primary">View Details</a></td>
                                         </tr>
-                                        <tr>
-                                            <td>Cetirizine</td>
-                                            <td>15</td>
-                                            <td>45</td>
-                                            <td>$4.00</td>
-                                            <td>300</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Metformin</td>
-                                            <td>20</td>
-                                            <td>60</td>
-                                            <td>$3.00</td>
-                                            <td>400</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Most Recently Sold Medicine Table -->
-        <div class="container-fluid mb-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <!-- Header with Title and Dropdown for Time Period Selection -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="card-title mb-0">Most Sold In-Store Medicine</h6>
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButtonMostRecent" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Select Time Period
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonMostRecent">
-                                        <li><a class="dropdown-item" href="#">Current Month</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 15 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                                        <li><a class="dropdown-item" href="#">Last Month</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-                                <table class="table table-hover table-bordered" style="width: 100%;">
-                                    <thead>
-                                        <tr>
-                                            <th>Product</th>
-                                            <th>Retail</th>
-                                            <th>Quantity Sold</th>
-                                            <th>Price</th>
-                                            <th>Available Amount</th>
-                                            <th>Status</th>
-                                            <th>Info</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Aspirin</td>
-                                            <td>30</td>
-                                            <td>90</td>
-                                            <td>$12.00</td>
-                                            <td>200</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Vitamin C</td>
-                                            <td>25</td>
-                                            <td>70</td>
-                                            <td>$8.00</td>
-                                            <td>250</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Omeprazole</td>
-                                            <td>40</td>
-                                            <td>110</td>
-                                            <td>$7.00</td>
-                                            <td>300</td>
-                                            <td><span class="badge bg-success">In Stock</span></td>
-                                            <td><a href="#" class="text-primary">View Details</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    }
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -390,3 +235,34 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the active tab from the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'tab1'; // Default to 'tab1' if no parameter is present
+
+        // Activate the correct tab
+        const tab = new bootstrap.Tab(document.getElementById(activeTab + '-tab'));
+        tab.show();
+
+        // Add event listeners to update the URL with the active tab
+        document.querySelectorAll('#myTab a[data-bs-toggle="tab"]').forEach(function(tabLink) {
+            tabLink.addEventListener('click', function() {
+                const targetTab = tabLink.getAttribute('href').substring(1);
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('tab', targetTab);
+                history.replaceState(null, '', newUrl); // Update URL without reloading
+            });
+        });
+    });
+
+    function onTimePeriodChange(timePeriod) {
+        // Preserve the active tab in the query parameter
+        const activeTab = document.querySelector('#myTab .nav-link.active').getAttribute('href').substring(1);
+        const newUrl = `@Url.Action("Report", "Admin")?timePeriod=${timePeriod}&tab=${activeTab}`;
+
+        // Redirect with the selected time period and active tab
+        window.location.href = newUrl;
+    }
+</script>
+
