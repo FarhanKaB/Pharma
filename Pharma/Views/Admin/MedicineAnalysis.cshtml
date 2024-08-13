@@ -70,9 +70,22 @@
                     var yearlyData = data.YearlySalesData;
                     var monthlyData = data.MonthlySalesData;
 
-                    // Process data
-                    function processData(data, type) {
+                    // Process data for the yearly chart
+                    function processYearlyData(data, type) {
                         return data.map(item => item[type] || 0);
+                    }
+
+                    // Process data for the monthly chart
+                    function processMonthlyData(data, type) {
+                        let daysInMonth = 31; // Maximum possible days in any month
+                        let salesData = Array.from({ length: daysInMonth }, () => 0);
+
+                        data.forEach(item => {
+                            let day = item.Day; // Assuming your data includes a 'Day' field
+                            salesData[day - 1] = item[type] || 0; // Adjusting for 0-based index
+                        });
+
+                        return salesData;
                     }
 
                     // Destroy existing charts if they exist to prevent overlap
@@ -83,15 +96,15 @@
                         chartBarMonthly.destroy();
                     }
 
-                    // Calculate the combined sales for yearly data
-                    var yearlyTotalSales = processData(yearlyData, 'TotalSales');
-                    var yearlyOnlineSales = processData(yearlyData, 'OnlineSales');
-                    var yearlyRetailSales = processData(yearlyData, 'RetailSales');
+                    // Yearly data series
+                    var yearlyTotalSales = processYearlyData(yearlyData, 'TotalSales');
+                    var yearlyOnlineSales = processYearlyData(yearlyData, 'OnlineSales');
+                    var yearlyRetailSales = processYearlyData(yearlyData, 'RetailSales');
 
-                    // Calculate the combined sales for monthly data
-                    var monthlyTotalSales = processData(monthlyData, 'TotalSales');
-                    var monthlyOnlineSales = processData(monthlyData, 'OnlineSales');
-                    var monthlyRetailSales = processData(monthlyData, 'RetailSales');
+                    // Monthly data series
+                    var monthlyTotalSales = processMonthlyData(monthlyData, 'TotalSales');
+                    var monthlyOnlineSales = processMonthlyData(monthlyData, 'OnlineSales');
+                    var monthlyRetailSales = processMonthlyData(monthlyData, 'RetailSales');
 
                     // Medicine Sales - Yearly
                     var optionsBarYearly = {
@@ -118,47 +131,46 @@
 
                     // Medicine Sales - Monthly
                     var optionsBarMonthly = {
-                        chart: {                        type: 'bar',
-                        height: 350
-                    },
-                    series: [{
-                        name: 'Total Sales',
-                        data: monthlyTotalSales
-                    }, {
-                        name: 'Online Sales',
-                        data: monthlyOnlineSales
-                    }, {
-                        name: 'Retail Sales',
-                        data: monthlyRetailSales
-                    }],
-                    xaxis: {
-                        categories: Array.from({ length: 31 }, (_, i) => i + 1)
-                    }
-                };
-                chartBarMonthly = new ApexCharts(document.querySelector("#medicineSalesBarChartMonthly"), optionsBarMonthly);
-                chartBarMonthly.render();
-            }
+                        chart: {
+                            type: 'bar',
+                            height: 350
+                        },
+                        series: [{
+                            name: 'Total Sales',
+                            data: monthlyTotalSales
+                        }, {
+                            name: 'Online Sales',
+                            data: monthlyOnlineSales
+                        }, {
+                            name: 'Retail Sales',
+                            data: monthlyRetailSales
+                        }],
+                        xaxis: {
+                            categories: Array.from({ length: 31 }, (_, i) => i + 1) // Days 1 to 31
+                        }
+                    };
+                    chartBarMonthly = new ApexCharts(document.querySelector("#medicineSalesBarChartMonthly"), optionsBarMonthly);
+                    chartBarMonthly.render();
+                }
+            });
+        }
+
+        // Initial chart render
+        var initialYear = parseInt(document.getElementById('barChartYear').value);
+        var initialMonth = parseInt(document.getElementById('barChartMonth').value);
+        updateCharts(initialYear, initialMonth);
+
+        // Event listeners for dropdown changes
+        document.getElementById('barChartYear').addEventListener('change', function () {
+            var selectedYear = parseInt(this.value);
+            var selectedMonth = parseInt(document.getElementById('barChartMonth').value);
+            updateCharts(selectedYear, selectedMonth);
         });
-    }
 
-    // Initial chart render
-    var initialYear = parseInt(document.getElementById('barChartYear').value);
-    var initialMonth = parseInt(document.getElementById('barChartMonth').value);
-    updateCharts(initialYear, initialMonth);
-
-    // Event listeners for dropdown changes
-    document.getElementById('barChartYear').addEventListener('change', function () {
-        var selectedYear = parseInt(this.value);
-        var selectedMonth = parseInt(document.getElementById('barChartMonth').value);
-        updateCharts(selectedYear, selectedMonth);
+        document.getElementById('barChartMonth').addEventListener('change', function () {
+            var selectedYear = parseInt(document.getElementById('barChartYear').value);
+            var selectedMonth = parseInt(this.value);
+            updateCharts(selectedYear, selectedMonth);
+        });
     });
-
-    document.getElementById('barChartMonth').addEventListener('change', function () {
-        var selectedYear = parseInt(document.getElementById('barChartYear').value);
-        var selectedMonth = parseInt(this.value);
-        updateCharts(selectedYear, selectedMonth);
-    });
-});
 </script>
-
-
