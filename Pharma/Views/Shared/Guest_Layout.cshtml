@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Pharma</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Section: Header -->
+    <section class="w-full px-8 text-gray-700 bg-white">
+        <div class="container flex flex-col flex-wrap items-center justify-between py-5 mx-auto md:flex-row max-w-7xl">
+            <div class="relative flex flex-col md:flex-row">
+                <a href="#_" class="flex items-center mb-5 font-medium text-gray-900 lg:w-auto lg:items-center lg:justify-center md:mb-0">
+                    <span class="mx-auto text-xl font-black leading-none text-gray-900 select-none">Pharma<span class="text-indigo-600">.</span></span>
+                </a>
+                <nav class="flex flex-wrap items-center mb-5 text-base md:mb-0 md:pl-8 md:ml-8 md:border-l md:border-gray-200">
+                    <a href="~/Guest/Guest_Home" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">Home</a>
+                    <a href="~/Guest/Guest_About" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">About</a>
+                    <a href="~/Guest/Guest_Contact" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">Contact</a>
+                    <a href="~/Guest/Guest_Shop" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">Shop</a>
+                </nav>
+            </div>
+
+            <div class="inline-flex items-center ml-5 space-x-6 lg:justify-end">
+                <a href="~/User/UserLogin" class="text-base font-medium leading-6 text-gray-600 whitespace-no-wrap transition duration-150 ease-in-out hover:text-gray-900">
+                    Sign in
+                </a>
+                <a href="~/User/UserLogin" class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-white whitespace-no-wrap bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+                    Sign up
+                </a>
+            </div>
+        </div>
+    </section>
+
+    @RenderBody()
+
+    <!-- Footer -->
+    <footer class="w-full bg-white">
+        <div class="container flex flex-col items-center px-8 py-12 mx-auto max-w-7xl">
+            <p class="mt-2 text-base leading-6 text-center text-gray-400">
+                &copy; 2024 Pharma. All rights reserved.
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>

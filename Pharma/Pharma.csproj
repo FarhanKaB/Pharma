@@ -134,8 +134,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\GuestController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SellerController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -224,6 +226,21 @@
     <Content Include="Views\Seller\ViewCart.cshtml" />
     <Content Include="Views\Seller\ViewMedicines.cshtml" />
     <Content Include="Views\Seller\ViewReceipts.cshtml" />
+    <Content Include="Views\Shared\Guest_Layout.cshtml" />
+    <Content Include="Views\Shared\User_Layout.cshtml" />
+    <Content Include="Views\User\Dashboard.cshtml" />
+    <Content Include="Views\User\OrderHistory.cshtml" />
+    <Content Include="Views\User\Profile.cshtml" />
+    <Content Include="Views\User\RequestMedicine.cshtml" />
+    <Content Include="Views\User\UserAbout.cshtml" />
+    <Content Include="Views\User\UserContact.cshtml" />
+    <Content Include="Views\User\UserLogin.cshtml" />
+    <Content Include="Views\User\ViewCart.cshtml" />
+    <Content Include="Views\User\ViewMedicines.cshtml" />
+    <Content Include="Views\Guest\Guest_About.cshtml" />
+    <Content Include="Views\Guest\Guest_Contact.cshtml" />
+    <Content Include="Views\Guest\Guest_Home.cshtml" />
+    <Content Include="Views\Guest\Guest_Shop.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

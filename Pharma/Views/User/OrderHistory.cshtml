@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Pharma.Models.Order>
+@{
+    ViewBag.Title = "Order History";
+    ViewBag.Header = "Order History";
+    Layout = "~/Views/Shared/User_Layout.cshtml";
+}
+
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="container mx-auto px-4 mt-8">
+        <h1 class="text-2xl font-bold mb-4">Order History</h1>
+
+        <!-- Search Form -->
+        <form method="post" action="@Url.Action("OrderHistory", "User")" class="mb-4">
+            <div class="relative">
+                <input type="text" id="search" name="search" placeholder="Enter keywords..." class="pl-4 pr-8 py-2 w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <button type="submit" class="absolute inset-y-0 right-0 px-3 py-2 bg-gray-200 text-gray-600 rounded-md hover:bg-gray-300 focus:outline-none focus:bg-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a4 4 0 11-8 0 4 4 0 018 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.5 17.5l4.5 4.5" />
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table id="order-table" class="min-w-full bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 shadow-md">
+                <thead>
+                    <tr class="bg-gray-100 dark:bg-gray-700">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Order ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Order Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Total Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+
+                @if (Model != null && Model.Any())
+                {
+                    <tbody>
+                        @Html.AntiForgeryToken()
+                        @foreach (var orderMedicine in Model)
+                        {
+                            <tr class="bg-white dark:bg-gray-800">
+                                <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.OrderID</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-block px-2 py-1 rounded bg-yellow-200 text-yellow-800">@orderMedicine.Status</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.OrderDate</td>
+                                <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.TotalPrice</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="#" class="text-blue-600 hover:underline">View Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                else
+                {
+                    <p>No order is placed yet.</p>
+                }
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-4">
+            <button class="px-4 py-2 bg-gray-200 text-gray-600 rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300" onclick="changePage(-1)" disabled>&lt; Prev</button>
+            <button class="px-4 py-2 bg-gray-200 text-gray-600 rounded-md ml-2 hover:bg-gray-300 focus:outline-none focus:bg-gray-300" onclick="changePage(1)">Next &gt;</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        const tableRows = document.querySelectorAll('#order-table tbody tr');
+
+        function showPage(page) {
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            tableRows.forEach((row, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.querySelector('button[onclick="changePage(-1)"]').disabled = page === 1;
+            document.querySelector('button[onclick="changePage(1)"]').disabled = endIndex >= tableRows.length;
+        }
+
+        function changePage(change) {
+            currentPage += change;
+            showPage(currentPage);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            showPage(currentPage);
+        });
+    </script>
+</body>
