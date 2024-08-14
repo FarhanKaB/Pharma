@@ -21,6 +21,11 @@ namespace Pharma.Controllers
             return View();
         }
 
+        public ActionResult UserSignup()
+        {
+            return View();
+        }
+
         // POST: User/Login
         [HttpPost]
         [ValidateAntiForgeryToken]

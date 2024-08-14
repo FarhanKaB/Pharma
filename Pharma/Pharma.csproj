@@ -241,6 +241,7 @@
     <Content Include="Views\Guest\Guest_Contact.cshtml" />
     <Content Include="Views\Guest\Guest_Home.cshtml" />
     <Content Include="Views\Guest\Guest_Shop.cshtml" />
+    <Content Include="Views\User\UserSignup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
