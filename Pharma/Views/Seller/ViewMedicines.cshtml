@@ -25,9 +25,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Name</td>
                 <td>@item.Price</td>
-                <td>@item.ExpiryDate.ToShortDateString()</td>
                 <td>@item.Quantity</td>
                 <td>
                     @using (Html.BeginForm("AddToList", "Seller", FormMethod.Post))

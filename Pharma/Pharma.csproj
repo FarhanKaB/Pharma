@@ -138,7 +138,7 @@
     <Compile Include="Models\Medicine.cs" />
     <Compile Include="Models\MedicineRequest.cs" />
     <Compile Include="Models\Order.cs" />
-    <Compile Include="Models\OrderDetails.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
     <Compile Include="Models\OrderItem.cs" />
     <Compile Include="Models\PharmacyContext.cs" />
     <Compile Include="Models\Request.cs" />
@@ -220,6 +220,10 @@
     <Content Include="Views\Guest\Guest_Shop.cshtml" />
     <Content Include="Views\Guest\Guest_Contact.cshtml" />
     <Content Include="Views\Shared\User_Layout.cshtml" />
+    <Content Include="Views\User\UserContact.cshtml" />
+    <Content Include="Views\User\UserAbout.cshtml" />
+    <Content Include="Views\User\Profile.cshtml" />
+    <Content Include="Views\User\OrderHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

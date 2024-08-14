@@ -19,9 +19,9 @@
                 </a>
                 <nav class="flex flex-wrap items-center mb-5 text-base md:mb-0 md:pl-8 md:ml-8 md:border-l md:border-gray-200">
                     <a href="~/User/Dashboard" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">Home</a>
-                    <a href="~/Guest/Guest_About" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">About</a>
+                    <a href="~/User/UserAbout" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">About</a>
                     <a href="~/User/ViewMedicines" class="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900">Shop</a>
-                    <a href="~/User/User_Contact" class="font-medium leading-6 text-gray-600 hover:text-gray-900">Contact</a>
+                    <a href="~/User/UserContact" class="font-medium leading-6 text-gray-600 hover:text-gray-900">Contact</a>
                 </nav>
             </div>
 
@@ -36,10 +36,12 @@
                         <svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A7.968 7.968 0 0112 15c2.21 0 4.209.896 5.879 2.378M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
-                        <span class="ml-1">Username</span>
+                        <span class="ml-1">@Session["Username"]</span>
                     </button>
                     <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg hidden">
-                        <a href="logout.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                        <a href="/User/Profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="/User/OrderHistory" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Order History</a>
+                        <a href="/Controllers/UserController/Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
                     </div>
                 </div>
             </div>
@@ -67,6 +69,7 @@
     <script>
         function toggleDropdown() {
             var dropdown = document.getElementById('dropdown');
+
             dropdown.classList.toggle('hidden');
         }
 

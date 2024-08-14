@@ -5,7 +5,9 @@ using System.Web;
 
 namespace Pharma.Models
 {
-    public class OrderDetails
+
+
+    public class OrderDetail
     {
         public int OrderDetailID { get; set; }
         public int OrderID { get; set; }

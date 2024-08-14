@@ -9,13 +9,11 @@ namespace Pharma.Models
     {
         public int OrderID { get; set; }
         public int CustomerID { get; set; }
-        public int SellerID { get; set; }
+        public int? SellerID { get; set; } // Nullable SellerID
         public OrderStatus Status { get; set; }
         public DateTime OrderDate { get; set; }
         public decimal TotalPrice { get; set; }
-        //public List<OrderDetail> OrderDetails { get; set; }
-        //public int MedicineID { get; set; }
-
+        public List<OrderDetail> OrderDetails { get; set; }
 
         // Navigation properties
         public virtual Customer Customer { get; set; }
