@@ -49,14 +49,24 @@ namespace Pharma.Controllers
         // GET: Seller/Dashboard
         public ActionResult Dashboard()
         {
+            // Ensure SellerID is present in the session
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            var sellerId = (int)Session["SellerID"];
+
             var viewModel = new SellerDashboardViewModel
             {
                 TotalUsers = db.Customers.Count(),
                 TotalMedicines = db.Medicines.Count(),
-                TotalOrders = db.Orders.Count(), // Updated to get actual order count
-                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).ToList()
+                TotalOrders = db.Receipts.Count(r => r.SellerID == sellerId), // Count receipts for the current seller
+                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).ToList(),
+                PendingOrdersCount = db.Orders.Count(o => o.Status == 0)
+            };
 
-        };
             return View(viewModel);
         }
 
@@ -111,9 +121,37 @@ namespace Pharma.Controllers
             return View(receipts);
         }*/
 
-        public ActionResult ViewReceipts()
+        public ActionResult ViewReceipts(int page = 1, int pageSize = 10)
         {
-            var receipts = db.Receipts.Include(r => r.ReceiptItems).ToList();
+            // Ensure SellerID is present in the session
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            // Retrieve the SellerID from the session
+            int sellerId = (int)Session["SellerID"];
+
+            // Fetch receipts that belong to the current seller
+            var receiptsQuery = db.Receipts
+                                  .Include(r => r.ReceiptItems)
+                                  .Where(r => r.SellerID == sellerId);
+
+            // Calculate the total count of receipts for the seller
+            int totalReceipts = receiptsQuery.Count();
+
+            // Fetch the appropriate subset of receipts for the current page
+            var receipts = receiptsQuery
+                           .OrderByDescending(r => r.DateCreated)
+                           .Skip((page - 1) * pageSize)
+                           .Take(pageSize)
+                           .ToList();
+
+            // Set ViewBag properties for pagination
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalReceipts / pageSize);
+            ViewBag.CurrentPage = page;
+
             return View(receipts);
         }
 

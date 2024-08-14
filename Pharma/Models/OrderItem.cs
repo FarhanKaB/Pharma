@@ -20,5 +20,6 @@ namespace Pharma.Models
         public int TotalMedicines { get; set; }
         public int TotalOrders { get; set; }
         public List<Medicine> LatestMedicines { get; set; }
+        public int PendingOrdersCount { get; set; }
     }
 }
