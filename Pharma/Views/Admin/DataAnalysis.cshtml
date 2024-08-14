@@ -72,9 +72,19 @@
                     var yearlyRetailData = data.YearlyRetailData;
                     var monthlyRetailData = data.MonthlyRetailData;
 
-                    // Process data
-                    function processData(data, type) {
+                    // Process data for yearly chart (same as before)
+                    function processYearlyData(data, type) {
                         return data.map(item => item[type] || 0);
+                    }
+
+                    // Process data for monthly chart (map day to correct index)
+                    function processMonthlyData(data, type) {
+                        var result = Array(31).fill(0); // Fill with zeros for each day of the month
+                        data.forEach(item => {
+                            var day = item.Day; // Assuming your data has a 'Day' property indicating the day of the month
+                            result[day - 1] = item[type] || 0;
+                        });
+                        return result;
                     }
 
                     // Destroy existing charts if they exist to prevent overlap
@@ -87,19 +97,23 @@
 
                     // Calculate the combined revenue for yearly data
                     var yearlyRevenue = [];
-                    var yearlyOnline = processData(yearlyOnlineData, 'Online');
-                    var yearlyRetail = processData(yearlyRetailData, 'Retail');
+                    var yearlyOnline = processYearlyData(yearlyOnlineData, 'Online');
+                    var yearlyRetail = processYearlyData(yearlyRetailData, 'Retail');
                     for (var i = 0; i < 12; i++) {
                         yearlyRevenue.push((yearlyOnline[i] || 0) + (yearlyRetail[i] || 0));
                     }
 
                     // Calculate the combined revenue for monthly data
                     var monthlyRevenue = [];
-                    var monthlyOnline = processData(monthlyOnlineData, 'Online');
-                    var monthlyRetail = processData(monthlyRetailData, 'Retail');
+                    var monthlyOnline = processMonthlyData(monthlyOnlineData, 'Online');
+                    var monthlyRetail = processMonthlyData(monthlyRetailData, 'Retail');
                     for (var i = 0; i < 31; i++) {
                         monthlyRevenue.push((monthlyOnline[i] || 0) + (monthlyRetail[i] || 0));
                     }
+
+                    // X-axis categories should match the exact number of days in the selected month
+                    var daysInMonth = new Date(year, month, 0).getDate();
+                    var categories = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
                     // Sales Trends - Yearly
                     var optionsLineYearly = {
@@ -132,16 +146,16 @@
                         },
                         series: [{
                             name: 'Revenue',
-                            data: monthlyRevenue
+                            data: monthlyRevenue.slice(0, daysInMonth) // Only show data up to the number of days in the month
                         }, {
                             name: 'Online',
-                            data: monthlyOnline
+                            data: monthlyOnline.slice(0, daysInMonth)
                         }, {
                             name: 'Retail',
-                            data: monthlyRetail
+                            data: monthlyRetail.slice(0, daysInMonth)
                         }],
                         xaxis: {
-                            categories: Array.from({ length: 31 }, (_, i) => i + 1)
+                            categories: categories
                         }
                     };
                     chartLineMonthly = new ApexCharts(document.querySelector("#salesLineChartMonthly"), optionsLineMonthly);
@@ -169,4 +183,3 @@
         });
     });
 </script>
-
