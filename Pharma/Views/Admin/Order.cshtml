@@ -93,7 +93,8 @@
                                     <td>@order.OrderDate.ToString("yyyy-MM-dd")</td>
                                     <td>@order.TotalPrice.ToString("C")</td>
                                     <td><a href="#" data-bs-toggle="modal" data-bs-target="#orderDetailsModal" data-bs-orderid="@order.OrderID">View Details</a></td>
-                                    <td><button class="btn btn-sm btn-success">Delivered</button></td>
+                                    <td><button class="btn btn-sm btn-success" onclick="markOrderAsDelivered(@order.OrderID)">Delivered</button></td>
+
                                 </tr>
                             }
                         </tbody>
@@ -252,7 +253,7 @@
 
                         <div class="row mt-4">
                             <div class="col-md-6">
-                               
+
                             </div>
                             <div class="col-md-6 text-end">
                                 <h5>Total: ${data.TotalPrice}</h5>
@@ -307,5 +308,32 @@
     // Initial badge update
     updateBadgeCount('inProcessOrders', 'inProcessBadge');
     updateBadgeCount('pendingOrders', 'pendingBadge');
+
+    function markOrderAsDelivered(orderId) {
+    if (confirm('Are you sure you want to mark this order as delivered?')) {
+        fetch('@Url.Action("MarkAsDelivered")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ orderId: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Reload the page to reflect the changes
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the order.');
+        });
+    }
+}
+
 </script>
 

@@ -613,6 +613,20 @@ namespace Pharma.Controllers
 
             return View();
         }
+        [HttpPost]
+        public ActionResult MarkAsDelivered(int orderId)
+        {
+            var order = db.Orders.FirstOrDefault(o => o.OrderID == orderId);
+            if (order != null)
+            {
+                order.Status = OrderStatus.Delivered;
+                db.SaveChanges();
+                return Json(new { success = true, message = "Order marked as delivered successfully." });
+            }
+
+            return Json(new { success = false, message = "Order not found." });
+        }
+
 
         public ActionResult GetOrderDetails(int orderId)
         {
