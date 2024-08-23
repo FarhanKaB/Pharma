@@ -44,10 +44,11 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <button type="button" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300" onclick="decrementQuantity(this)">-</button>
-                                            <input type="number" name="quantities[]" value="1" min="1" class="mx-2 w-12 px-2 py-1 border border-gray-300 rounded text-center text-gray-900 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-700 quantity-input" />
+                                            <input type="number" name="quantities[]" value="@(cartMedicine.Quantity > 1 ? 1 : 0)" min="@(cartMedicine.Quantity > 1 ? 1 : 0)" max="@cartMedicine.Quantity" class="mx-2 w-12 px-2 py-1 border border-gray-300 rounded text-center text-gray-900 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-700 quantity-input" />
                                             <button type="button" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300" onclick="incrementQuantity(this)">+</button>
                                         </div>
                                     </td>
+
                                     @*                                <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">$@cartMedicine.Price</td>
                                     *@
                                     <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white total-price">$@cartMedicine.Price</td>
@@ -77,6 +78,10 @@
     </div>
 </div>
 
+
+
+
+
 <script>
     function closeModal() {
         document.getElementById('viewCartModal').style.display = 'none';
@@ -84,9 +89,14 @@
 
     function incrementQuantity(button) {
         var input = button.previousElementSibling;
-        input.value = parseInt(input.value) + 1;
+        var maxValue = parseInt(input.getAttribute('max')); // Get the max value from the input field
+
+        if (parseInt(input.value) < maxValue) {
+            input.value = parseInt(input.value) + 1;
+        }
         updateTotal();
     }
+
 
     function decrementQuantity(button) {
         var input = button.nextElementSibling;

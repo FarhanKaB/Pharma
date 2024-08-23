@@ -105,31 +105,13 @@ namespace Pharma.Controllers
                 };*/
 
         // GET: User/ViewMedicines
+
         public ActionResult ViewMedicines()
         {
-            var medicines = db.Medicines.ToList(); // Load all medicines by default
+            var medicines = db.Medicines.ToList();                                         ///View Medicines
             return View(medicines);
         }
 
-        // POST: User/ViewMedicines
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ViewMedicines(string searchTerm)
-        {
-            var medicines = db.Medicines.AsQueryable();
-
-            // Check if the searchTerm is received
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                medicines = medicines.Where(m => m.MedicineName.Contains(searchTerm) ||
-                                                 m.GenericName.Contains(searchTerm) ||
-                                                 m.Manufacturer.Contains(searchTerm) ||
-                                                 m.Category.Contains(searchTerm));
-            }
-
-            // Return the filtered list of medicines to the view
-            return View(medicines.ToList());
-        }
 
 
 
@@ -152,7 +134,6 @@ namespace Pharma.Controllers
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "Invalid medicines in the cart.");
             }
 
-
             int customerId = (int)Session["UserID"];
 
             // Create a new order
@@ -171,8 +152,16 @@ namespace Pharma.Controllers
                 var medicine = cartMedicines[i];
                 var quantity = quantities[i];
 
+                // Check if the available quantity is enough
+                if (medicine.Quantity < quantity)
+                {
+                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, $"Not enough stock for {medicine.MedicineName}.");
+                }
 
+                // Reduce the quantity of the medicine
+                medicine.Quantity -= quantity;
 
+                // Create an order detail
                 var orderDetail = new OrderDetail
                 {
                     MedicineID = medicine.MedicineID,
@@ -185,7 +174,7 @@ namespace Pharma.Controllers
             // Calculate the total price of the order
             order.TotalPrice = order.OrderDetails.Sum(od => od.Price * od.Quantity);
 
-            // Save the order to the database
+            // Save the order and update the medicine quantities in the database
             db.Orders.Add(order);
             db.SaveChanges();
 
@@ -194,6 +183,7 @@ namespace Pharma.Controllers
 
             return RedirectToAction("ViewMedicines"); // Redirect to an order confirmation page
         }
+
 
         // Assuming you have a method to get the logged-in customer ID
 
@@ -404,6 +394,50 @@ namespace Pharma.Controllers
 
                     return View(orderMedicines);
                 }*/
+
+
+
+        public ActionResult GetOrderDetails(int orderId)
+        {
+            var order = db.Orders
+                          .Include(o => o.OrderDetails.Select(od => od.Medicine))
+                          .Include(o => o.Customer)
+                          .FirstOrDefault(o => o.OrderID == orderId);
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Return JSON with necessary data
+            return Json(new
+            {
+                order.OrderID,
+                OrderDate = order.OrderDate.ToString("yyyy-MM-dd"),
+                order.TotalPrice,
+                Customer = new
+                {
+                    order.Customer.FullName,
+                    order.Customer.Email,
+                    order.Customer.Phone,
+                    order.Customer.Address
+                },
+                OrderDetails = order.OrderDetails.Select(od => new
+                {
+                    od.Medicine.MedicineName,
+                    od.Medicine.GenericName,
+                    od.Medicine.Manufacturer,
+                    od.Medicine.DosageForm,
+                    od.Medicine.Strength,
+                    od.Quantity,
+                    od.Price,
+                    od.Medicine.Category
+                })
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
 
 
 
