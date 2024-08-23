@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
-using System.Web;
 using System.Web.Mvc;
 using Pharma.Models;
 
@@ -48,10 +45,10 @@ namespace Pharma.Controllers
             return View();
         }
 
-        // POST: User/ Signup
+        // POST: User/Signup
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UserRegister(Customer userReg)    ///      (Customer userReg) 
+        public ActionResult UserRegister(Customer userReg)
         {
             if (ModelState.IsValid)
             {
@@ -77,8 +74,9 @@ namespace Pharma.Controllers
                 // Add the new customer to the database
                 db.Customers.Add(customer);
                 db.SaveChanges();
+                return RedirectToAction("UserLogin");
             }
-            return RedirectToAction("UserLogin");
+            return View();
         }
 
         // GET: User/Logout
@@ -95,27 +93,22 @@ namespace Pharma.Controllers
         }
 
         // GET: User/ViewMedicines
-
-        // Normally, this data would come from a database. Here it's hardcoded for simplicity.
-        /*        private static List<Medicine> medicines = new List<Medicine>
-                {
-                    new Medicine { MedicineID = 1, Name = "Medicine 1", Description = "Description 1", Price = 10.0m, ImageUrl = "G:\\AUST_LECTURES\\3.2_SD LAB\\Pharma(project)\\Pharma\\image\\img1.jpeg" },
-                    new Medicine { MedicineID = 2, Name = "Medicine 2", Description = "Description 2", Price = 20.0m, ImageUrl = "G:\\AUST_LECTURES\\3.2_SD LAB\\Pharma(project)\\Pharma\\image\\img1.jpeg" },
-                    // Add more medicines as needed
-                };*/
-
-        // GET: User/ViewMedicines
-
         public ActionResult ViewMedicines()
         {
-            var medicines = db.Medicines.ToList();                                         ///View Medicines
+            var medicines = db.Medicines.ToList();
             return View(medicines);
         }
 
-
-
-
-
+        // GET: User/MedicineDetails
+        public ActionResult MedicineDetails(int id)
+        {
+            var medicine = db.Medicines.Find(id); // Fetch medicine by ID
+            if (medicine == null)
+            {
+                return HttpNotFound();
+            }
+            return View(medicine);
+        }
 
         // POST: User/PlaceOrder
         [HttpPost]
@@ -124,14 +117,14 @@ namespace Pharma.Controllers
         {
             if (medicineIds == null || !medicineIds.Any())
             {
-                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "No items in the cart.");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "No items in the cart.");
             }
 
             var cartMedicines = db.Medicines.Where(m => medicineIds.Contains(m.MedicineID)).ToList();
 
             if (!cartMedicines.Any())
             {
-                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, "Invalid medicines in the cart.");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid medicines in the cart.");
             }
 
             int customerId = (int)Session["UserID"];
@@ -142,7 +135,7 @@ namespace Pharma.Controllers
                 CustomerID = customerId,
                 OrderDate = DateTime.Now,
                 Status = OrderStatus.Pending,
-                TotalPrice = 0, // Initial total price calculations
+                TotalPrice = 0,
                 OrderDetails = new List<OrderDetail>()
             };
 
@@ -152,10 +145,9 @@ namespace Pharma.Controllers
                 var medicine = cartMedicines[i];
                 var quantity = quantities[i];
 
-                // Check if the available quantity is enough
                 if (medicine.Quantity < quantity)
                 {
-                    return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest, $"Not enough stock for {medicine.MedicineName}.");
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, $"Not enough stock for {medicine.MedicineName}.");
                 }
 
                 // Reduce the quantity of the medicine
@@ -183,44 +175,6 @@ namespace Pharma.Controllers
 
             return RedirectToAction("ViewMedicines"); // Redirect to an order confirmation page
         }
-
-
-        // Assuming you have a method to get the logged-in customer ID
-
-        // Assuming you have a method to get the logged-in customer ID
-        /*        private int GetLoggedInCustomerId()
-                {
-                    // Replace this with your actual logic to get the logged-in customer ID
-                    return 1; // Placeholder
-                }
-
-        /*      public ActionResult PlaceOrder(int medicineId, int quantity)
-              {
-                  var medicine = db.Medicines.Find(medicineId);
-                  if (medicine != null && medicine.Quantity >= quantity)
-                  {
-                      var order = new Order
-                      {
-                          CustomerID = (int)Session["UserID"],
-                          //MedicineID = medicine.MedicineID,
-
-                          OrderDate = DateTime.Now,
-                          TotalPrice = medicine.Price * quantity
-                      };
-
-                      db.Orders.Add(order);
-                      medicine.Quantity -= quantity;
-                      db.SaveChanges();
-
-                      TempData["Success"] = "Order placed successfully.";
-                  }
-                  else
-                  {
-                      TempData["Error"] = "The requested quantity is not available.";
-                  }
-                  return RedirectToAction("ViewMedicines");
-              }*/
-
 
         // GET: User/RequestMedicine
         public ActionResult RequestMedicine()
@@ -271,10 +225,10 @@ namespace Pharma.Controllers
             cart.Add(medicine.MedicineID);
             Session["Cart"] = cart;
 
-            return new HttpStatusCodeResult(System.Net.HttpStatusCode.OK);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        // GET
+        // GET: User/ViewCart
         public ActionResult ViewCart()
         {
             List<Medicine> cartMedicines = new List<Medicine>();
@@ -310,26 +264,13 @@ namespace Pharma.Controllers
             return Json(new { success = true });
         }
 
-
+        // GET: User/Profile
         public new ActionResult Profile()
         {
-            // Get the customer ID from the session
             int customerId = (int)Session["UserID"];
-
-            // Fetch the customer details from the database
             var customerDetails = db.Customers.FirstOrDefault(c => c.CustomerID == customerId);
-
-            // Check if customer exists
-            /*            if (customerDetails == null)
-                        {
-                            // Handle the case where the customer is not found
-                            return HttpNotFound("Customer not found");
-                        }*/
-
-            // Pass the customer details to the view
             return View(customerDetails);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -338,8 +279,6 @@ namespace Pharma.Controllers
             if (ModelState.IsValid)
             {
                 int customerId = (int)Session["UserID"];
-
-                // Find the customer in the database
                 var customer = db.Customers.SingleOrDefault(c => c.CustomerID == customerId);
 
                 if (customer != null)
@@ -355,23 +294,18 @@ namespace Pharma.Controllers
             return RedirectToAction("Profile");
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PassChange(Customer passcng)    ///      (Customer userReg) 
+        public ActionResult PassChange(Customer passcng)
         {
             if (ModelState.IsValid)
             {
-
                 int customerId = (int)Session["UserID"];
-
                 var customer = db.Customers.SingleOrDefault(c => c.CustomerID == customerId);
 
                 if (customer != null)
                 {
                     customer.Password = !string.IsNullOrEmpty(passcng.Password) ? passcng.Password : customer.Password;
-
                     db.SaveChanges();
                 }
             }
@@ -379,141 +313,47 @@ namespace Pharma.Controllers
             return RedirectToAction("Profile");
         }
 
-
-
-        /*        public ActionResult OrderHistory()
-                {
-                    int customerId = (int)Session["UserID"];
-
-                    var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails) .ToList();
-
-                    if (orderMedicines == null || !orderMedicines.Any())
-                    {
-                        return HttpNotFound("No orders placed yet");
-                    }
-
-                    return View(orderMedicines);
-                }*/
-
-
-
-        public ActionResult GetOrderDetails(int orderId)
-        {
-            var order = db.Orders
-                          .Include(o => o.OrderDetails.Select(od => od.Medicine))
-                          .Include(o => o.Customer)
-                          .FirstOrDefault(o => o.OrderID == orderId);
-
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-
-            // Return JSON with necessary data
-            return Json(new
-            {
-                order.OrderID,
-                OrderDate = order.OrderDate.ToString("yyyy-MM-dd"),
-                order.TotalPrice,
-                Customer = new
-                {
-                    order.Customer.FullName,
-                    order.Customer.Email,
-                    order.Customer.Phone,
-                    order.Customer.Address
-                },
-                OrderDetails = order.OrderDetails.Select(od => new
-                {
-                    od.Medicine.MedicineName,
-                    od.Medicine.GenericName,
-                    od.Medicine.Manufacturer,
-                    od.Medicine.DosageForm,
-                    od.Medicine.Strength,
-                    od.Quantity,
-                    od.Price,
-                    od.Medicine.Category
-                })
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-
-
-
-
-
+        // GET: User/OrderHistory
         [HttpGet]
         public ActionResult OrderHistory()
         {
             int customerId = (int)Session["UserID"];
             var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails).ToList();
-
             return View(orderMedicines);
         }
+
         [HttpPost]
         public ActionResult OrderHistory(string search)
         {
             int customerId = (int)Session["UserID"];
             OrderStatus status;
-
-            // Check if the search string can be parsed into an OrderStatus enum value
             bool isValidStatus = Enum.TryParse(search, true, out status);
-
-            // Convert the search string to DateTime, assuming the format is 'M/d/yyyy'
             DateTime searchDate;
-            bool isValidDate = DateTime.TryParseExact(search, "M/d/yyyy", null, System.Globalization.DateTimeStyles.None, out searchDate);
 
-            var orderMedicines = db.Orders
-                                   .Where(c => c.CustomerID == customerId &&
-                                               (c.OrderID.ToString().Contains(search) ||
-                                               (isValidStatus && c.Status == status) ||
-                                               (isValidDate && c.OrderDate.Date == searchDate.Date) ||
-                                               c.TotalPrice.ToString().Contains(search)))
-                                   .Include(o => o.OrderDetails)
-                                   .ToList();
-
-            return View(orderMedicines);
-        }
-
-
-
-
-
-
-
-
-
-        public ActionResult UserContact()
-        {
-            return View();
-        }
-
-        public ActionResult UserAbout()
-        {
-            return View();
-        }
-
-        /*        // GET
-                public ActionResult ViewCart()
+            if (!string.IsNullOrEmpty(search))
+            {
+                var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails).ToList();
+                if (isValidStatus)
                 {
-                    return View(new List<Medicine>());
+                    var orders = orderMedicines.Where(o => o.Status == status).ToList();
+                    return View(orders);
                 }
-
-                //POST
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                public ActionResult ViewCart(int medicineId)
+                else if (DateTime.TryParse(search, out searchDate))
                 {
-                    var medicine = db.Medicines.Find(medicineId);
-
-                    if (medicine == null)
-                    {
-                        return HttpNotFound();
-                    }
-
-                    List<Medicine> cartMedicines = new List<Medicine> { medicine };
-
-                    return View(cartMedicines);
-                }*/
-
+                    var orders = orderMedicines.Where(o => DbFunctions.TruncateTime(o.OrderDate) == searchDate.Date).ToList();
+                    return View(orders);
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Invalid search input. Please enter a valid order status or date.");
+                    return View(orderMedicines);
+                }
+            }
+            else
+            {
+                var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails).ToList();
+                return View(orderMedicines);
+            }
+        }
     }
 }

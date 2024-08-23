@@ -40,36 +40,61 @@
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
 
-        .medicine-card img {
+    .image-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+        .image-container img {
             width: 100%;
             height: 200px;
             object-fit: cover;
+            transition: all 0.3s ease;
         }
 
-        .medicine-card .details {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1rem;
-            overflow-y: auto;
+        .image-container:hover img {
+            transform: scale(1.1);
+            filter: grayscale(100%);
         }
 
-        .medicine-card:hover .details {
-            display: block;
+    .hover-details {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 2; /* Ensure it appears above the image */
+    }
+
+    .image-container:hover .hover-details {
+        opacity: 1;
+    }
+
+    .details-button {
+        padding: 0.5rem 1rem;
+        background-color: #4A5568;
+        border: none;
+        border-radius: 0.25rem;
+        color: white;
+        cursor: pointer;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+    }
+
+        .details-button:hover {
+            background-color: #2D3748;
         }
 
-        .medicine-card .details h3 {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-
-        .medicine-card .details p {
-            margin: 0.5rem 0;
-        }
+    .p-4 {
+        padding: 1rem;
+    }
 </style>
 
 <section class="px-2 py-32 bg-white md:px-0">
@@ -126,37 +151,34 @@
             @foreach (var medicine in Model)
             {
                 <div class="medicine-card" data-name="@medicine.MedicineName" data-generic="@medicine.GenericName" data-category="@medicine.Category" data-price="@medicine.Price" data-id="@medicine.MedicineID" data-quantity="@medicine.Quantity">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName">
+                    <!-- Image with hover effect -->
+                    <div class="image-container">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName">
+
+                        <!-- Hover Details Button -->
+                        <div class="hover-details">
+                            <a href="@Url.Action("MedicineDetails", "User", new { id = medicine.MedicineID })" class="details-button">View Details</a>
+                        </div>
+                    </div>
+
                     <div class="p-4">
                         <h2 class="text-xl font-semibold text-gray-800">@medicine.MedicineName</h2>
                         <p class="mt-2 text-gray-600">@medicine.Manufacturer</p>
                         <div class="flex items-center justify-between mt-4">
                             <h3 class="text-lg font-semibold text-gray-800">$@medicine.Price</h3>
-                        </div>
-                    </div>
-                    <div class="details">
-                        <h3 class="text-base font-semibold">@medicine.MedicineName</h3>
-                        <p class="text-sm"><strong>Generic Name:</strong> @medicine.GenericName</p>
-                        <p class="text-sm"><strong>Manufacturer:</strong> @medicine.Manufacturer</p>
-                        <p class="text-sm"><strong>Dosage Form:</strong> @medicine.DosageForm</p>
-                        <p class="text-sm"><strong>Strength:</strong> @medicine.Strength</p>
-                        <p class="text-sm"><strong>Quantity:</strong> @medicine.Quantity</p>
-                        <p class="text-sm"><strong>Price:</strong> $@medicine.Price</p>
-                        <p class="text-sm"><strong>Category:</strong> @medicine.Category</p>
-
-                        @if (medicine.Quantity > 0)
-                        {
-                            using (Html.BeginForm("AddToCart", "User", FormMethod.Post, new { @class = "add-to-cart-form" }))
+                            @if (medicine.Quantity > 0)
                             {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("medicineId", medicine.MedicineID)
-                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Add to Cart</button>
+                                <form class="add-to-cart-form" action="@Url.Action("AddToCart", "User")" method="post" data-medicine-id="@medicine.MedicineID">
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("medicineId", medicine.MedicineID)
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Add to Cart</button>
+                                </form>
                             }
-                        }
-                        else
-                        {
-                            <p class="font-bold text-red-600">Out of Stock</p>
-                        }
+                            else
+                            {
+                                <p class="font-bold text-red-600">Out of Stock</p>
+                            }
+                        </div>
                     </div>
                 </div>
             }
@@ -220,23 +242,28 @@
         // Event listeners
         $("#searchBox, #categoryFilter, #sortFilter, #stockFilter").on("input change", filterAndSortMedicines);
 
-        // Handle Add to Cart form submission via AJAX
+        filterAndSortMedicines(); // Initial filter and sort on page load
+
+        // Handle form submission using AJAX
         $(document).on("submit", ".add-to-cart-form", function (event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent the form from submitting normally
+
             var form = $(this);
+            var formData = form.serialize(); // Serialize the form data
+
             $.ajax({
                 url: form.attr("action"),
-                type: form.attr("method"),
-                data: form.serialize(),
+                type: 'POST',
+                data: formData,
                 success: function (response) {
-                    alert("Medicine added to cart successfully!");
+                    // Handle success (e.g., show a message, update cart icon, etc.)
+                    alert("Item added to cart successfully!");
                 },
                 error: function (xhr, status, error) {
-                    alert("Error adding medicine to cart.");
+                    // Handle error (e.g., show an error message)
+                    alert("An error occurred while adding the item to the cart.");
                 }
             });
         });
-
-        filterAndSortMedicines(); // Initial filter and sort on page load
     });
 </script>
