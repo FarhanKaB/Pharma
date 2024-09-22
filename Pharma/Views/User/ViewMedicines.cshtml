@@ -5,98 +5,6 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
 }
 
-<style>
-    .vertical-scroll-container {
-        max-height: 800px;
-        overflow-y: auto;
-    }
-
-        .vertical-scroll-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .vertical-scroll-container::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-        }
-
-    .row.no-gutters {
-        margin-right: 0;
-        margin-left: 0;
-    }
-
-        .row.no-gutters > [class^="col-"], .row.no-gutters > [class*=" col-"] {
-            padding-right: 0;
-            padding-left: 0;
-        }
-
-    .medicine-card {
-        position: relative;
-        width: 100%;
-        max-width: 300px;
-        margin: auto;
-        overflow: hidden;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-    }
-
-    .image-container {
-        position: relative;
-        overflow: hidden;
-    }
-
-        .image-container img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: all 0.3s ease;
-        }
-
-        .image-container:hover img {
-            transform: scale(1.1);
-            filter: grayscale(100%);
-        }
-
-    .hover-details {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 2; /* Ensure it appears above the image */
-    }
-
-    .image-container:hover .hover-details {
-        opacity: 1;
-    }
-
-    .details-button {
-        padding: 0.5rem 1rem;
-        background-color: #4A5568;
-        border: none;
-        border-radius: 0.25rem;
-        color: white;
-        cursor: pointer;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-    }
-
-        .details-button:hover {
-            background-color: #2D3748;
-        }
-
-    .p-4 {
-        padding: 1rem;
-    }
-</style>
-
 <section class="px-2 py-32 bg-white md:px-0">
     <div class="container items-center max-w-6xl px-8 mx-auto xl:px-5">
         <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl">
@@ -150,19 +58,19 @@
         <div id="medicineResults" class="vertical-scroll-container mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             @foreach (var medicine in Model)
             {
-                <div class="medicine-card" data-name="@medicine.MedicineName" data-generic="@medicine.GenericName" data-category="@medicine.Category" data-price="@medicine.Price" data-id="@medicine.MedicineID" data-quantity="@medicine.Quantity">
-                    <!-- Image with hover effect -->
-                    <div class="image-container">
-                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName">
-
-                        <!-- Hover Details Button -->
-                        <div class="hover-details">
-                            <a href="@Url.Action("MedicineDetails", "User", new { id = medicine.MedicineID })" class="details-button">View Details</a>
-                        </div>
+                <div class="medicine-card flex flex-col justify-between bg-white shadow rounded-lg overflow-hidden" data-name="@medicine.MedicineName" data-generic="@medicine.GenericName" data-category="@medicine.Category" data-price="@medicine.Price" data-id="@medicine.MedicineID" data-quantity="@medicine.Quantity">
+                    <!-- Image -->
+                    <div class="image-container h-48">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName" class="w-full h-full object-cover">
                     </div>
 
-                    <div class="p-4">
-                        <h2 class="text-xl font-semibold text-gray-800">@medicine.MedicineName</h2>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <!-- Medicine Name with link to details -->
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <a href="@Url.Action("MedicineDetails", "User", new { id = medicine.MedicineID })" class="text-indigo-600 hover:underline">
+                                @medicine.MedicineName
+                            </a>
+                        </h2>
                         <p class="mt-2 text-gray-600">@medicine.Manufacturer</p>
                         <div class="flex items-center justify-between mt-4">
                             <h3 class="text-lg font-semibold text-gray-800">$@medicine.Price</h3>

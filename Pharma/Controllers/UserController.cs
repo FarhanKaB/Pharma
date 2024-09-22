@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Web.Mvc;
 using Pharma.Models;
 
@@ -35,6 +36,8 @@ namespace Pharma.Controllers
                 {
                     Session["UserID"] = user.CustomerID;
                     Session["Username"] = user.Username;
+                    // Assuming 'user' is your user object
+                    Session["UserEmail"] = user.Email;
                     return RedirectToAction("Dashboard");
                 }
                 else
@@ -354,6 +357,55 @@ namespace Pharma.Controllers
                 var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails).ToList();
                 return View(orderMedicines);
             }
+        }
+
+        public ActionResult SendMessage(string subject, string message)
+        {
+            try
+            {
+                var userName = Session["UserName"] as string;
+                var userEmail = Session["UserEmail"] as string;
+
+                // Ensure the session variables for the user's name and email are set
+                if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userEmail))
+                {
+                    TempData["MessageSent"] = "Error: User information not found in session.";
+                    return RedirectToAction("UserContact");
+                }
+
+                // Create a new mail message
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("noreply@yourdomain.com"); // Can be a placeholder for Mailtrap
+                mail.To.Add("teamflancer47@gmail.com"); // The recipient address
+                mail.Subject = subject;
+                mail.Body = $"User: {userName}\nEmail: {userEmail}\n\nMessage:\n{message}";
+                mail.IsBodyHtml = false;
+
+                // SMTP settings for Mailtrap
+                SmtpClient smtpClient = new SmtpClient("smtp.mailtrap.io", 2525)
+                {
+                    Credentials = new NetworkCredential("a950acb93d1b57", "de5f27609363e0"),
+                    EnableSsl = true
+                };
+
+                // Send the email
+                smtpClient.Send(mail);
+
+                // Success message after sending email
+                TempData["MessageSent"] = "Message sent successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["MessageSent"] = $"Error sending message: {ex.Message}";
+            }
+
+            // Stay on the same page
+            return RedirectToAction("UserContact");
+        }
+
+        public ActionResult UserContact()
+        {
+            return View();
         }
     }
 }
