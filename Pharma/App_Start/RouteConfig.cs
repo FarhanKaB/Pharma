@@ -17,7 +17,7 @@ namespace Pharma
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Guest", action = "Guest_Home", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
