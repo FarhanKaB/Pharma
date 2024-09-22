@@ -34,6 +34,11 @@ namespace Pharma.Controllers
             return View();
         }
 
+        public ActionResult Guest_Offer()
+        {
+            return View();
+        }
+
 
         public ActionResult ViewCart()
         {

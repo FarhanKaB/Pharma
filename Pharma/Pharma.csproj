@@ -244,6 +244,8 @@
     <Content Include="Views\User\UserSignup.cshtml" />
     <Content Include="Views\Guest\ViewCart.cshtml" />
     <Content Include="Views\User\MedicineDetails.cshtml" />
+    <Content Include="Views\Guest\Guest_Offer.cshtml" />
+    <Content Include="Views\User\User_Offer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
