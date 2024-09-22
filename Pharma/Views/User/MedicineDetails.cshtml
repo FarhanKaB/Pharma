@@ -19,7 +19,6 @@
                     <p class="text-gray-600">@Model.GenericName</p>
                     <div class="flex items-center mt-4">
                         <span class="text-xl font-bold text-gray-800">$@Model.Price</span>
-                      
                         <span class="text-indigo-600 ml-2">20% off</span>
                     </div>
 
@@ -34,9 +33,7 @@
                                 <p><strong>Manufacturer:</strong> @Model.Manufacturer</p>
                                 <p><strong>Dosage Form:</strong> @Model.DosageForm</p>
                                 <p><strong>Strength:</strong> @Model.Strength</p>
-                               
                                 <p><strong>Category:</strong> @Model.Category</p>
-                                
                             </div>
                         </div>
                         <div class="border-b py-4">
@@ -67,19 +64,20 @@
                         </div>
                     </div>
 
-
-
-                    <!-- Action Buttons -->
+                    <!-- Normal-sized Add to Cart Button -->
                     <div class="mt-6">
-                        <div class="flex items-center space-x-4">
-                            <label for="quantity" class="text-gray-600">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" min="1" value="1" class="w-24 border px-2 py-1 text-gray-600 focus:outline-none">
-                        </div>
-                        <div class="flex flex-col space-y-4 mt-4 lg:flex-row lg:space-x-4 lg:space-y-0">
-                            <button class="w-full lg:flex-1 bg-indigo-600 text-white px-4 py-2 hover:bg-indigo-700">Buy Now</button>
-                            <button class="w-full lg:flex-1 bg-indigo-50 text-indigo-600 px-4 py-2 hover:bg-indigo-100">Add To Cart</button>
-                        </div>
+                        <form class="add-to-cart-form w-full lg:flex-1" action="@Url.Action("AddToCart", "User")" method="post" data-medicine-id="@Model.MedicineID">
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("medicineId", Model.MedicineID)
+                            @Html.Hidden("quantity", 1) <!-- Hidden field to capture default quantity -->
+                            <!-- Adjusted button width -->
+                            <button type="submit" class="w-1/3 bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-700 transition duration-200">
+                                Add To Cart
+                            </button>
+                        </form>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -90,6 +88,9 @@
         </footer>
     </div>
 
+    <!-- jQuery Script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         function toggleContent(id) {
             const content = document.getElementById(id);
@@ -99,5 +100,29 @@
                 content.style.display = "none";
             }
         }
+
+        $(document).ready(function () {
+            // Handle form submission using AJAX
+            $(document).on("submit", ".add-to-cart-form", function (event) {
+                event.preventDefault(); // Prevent the form from submitting normally
+
+                var form = $(this);
+                var formData = form.serialize(); // Serialize the form data
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        // Show alert message
+                        alert("Item added to cart successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error (e.g., show an error message)
+                        alert("An error occurred while adding the item to the cart.");
+                    }
+                });
+            });
+        });
     </script>
 </body>

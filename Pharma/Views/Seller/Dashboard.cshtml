@@ -6,7 +6,6 @@
     Layout = "~/Views/Shared/_SellerLayout.cshtml";
 }
 
-
 <style>
     .table-container {
         max-height: 400px; /* Adjust the height as needed */
@@ -14,44 +13,25 @@
     }
 </style>
 
-
 <div class="container-fluid mt-3">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <!-- Reduced width for customer management -->
             <div class="list-group">
                 <div class="card">
                     <div class="card-header bg-secondary text-white">
-                        User Management
+                        Customer Management
                     </div>
                     <div class="card-body">
-                        <a href="@Url.Action("Index", "Users")" class="list-group-item list-group-item-action">View Users</a>
-                        <a href="@Url.Action("Roles", "Users")" class="list-group-item list-group-item-action">Manage Roles</a>
-                        <a href="@Url.Action("Permissions", "Users")" class="list-group-item list-group-item-action">Manage Permissions</a>
-                    </div>
-                </div>
-                <div class="card mt-3">
-                    <div class="card-header bg-secondary text-white">
-                        Seller Management
-                    </div>
-                    <div class="card-body">
-                        <a href="@Url.Action("Index", "Seller")" class="list-group-item list-group-item-action">View Sellers</a>
-                        <a href="@Url.Action("Manage", "Seller")" class="list-group-item list-group-item-action">Manage Sellers</a>
-                        <a href="@Url.Action("Orders", "Seller")" class="list-group-item list-group-item-action">View Orders</a>
-                    </div>
-                </div>
-                <div class="card mt-3">
-                    <div class="card-header bg-secondary text-white">
-                        Report Management
-                    </div>
-                    <div class="card-body">
-                        <a href="@Url.Action("Index", "Report")" class="list-group-item list-group-item-action">View Reports</a>
-                        <a href="@Url.Action("Generate", "Report")" class="list-group-item list-group-item-action">Generate Report</a>
-                        <a href="@Url.Action("Analytics", "Report")" class="list-group-item list-group-item-action">Analytics</a>
+                        <a href="@Url.Action("Display_Customer_Seller", "Seller")" class="list-group-item list-group-item-action">Manage Roles & Permissions</a>
+                        <a href="@Url.Action("Create_Customer_Account_Seller", "Seller")" class="list-group-item list-group-item-action">Register Customer</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-9">
+
+        <div class="col-md-10">
+            <!-- Increased width for medicines table -->
             <div class="card">
                 <div class="card-header bg-secondary text-white">
                     System Overview
@@ -77,8 +57,7 @@
                         <div class="card text-center">
                             <div class="card-body">
                                 <h2><i class="bi bi-capsule"></i> @Model.TotalMedicines</h2>
-                                @*                                <h2><i class="bi bi-capsule"></i> 1875</h2>
-                                *@                                <h4>Medicines</h4>
+                                <h4>Medicines</h4>
                             </div>
                         </div>
                     </div>
@@ -92,11 +71,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
 
             <div class="card mt-4">
                 <div class="card-header bg-secondary text-white">
@@ -113,7 +87,6 @@
                                     <th>Name</th>
                                     <th>Generic Name</th>
                                     <th>Manufacturer</th>
-                                    <th>Dosage Form</th>
                                     <th>Strength</th>
                                     <th>Category</th>
                                     <th>Image</th>
@@ -130,7 +103,6 @@
                                         <td>@medicine.MedicineName</td>
                                         <td>@medicine.GenericName</td>
                                         <td>@medicine.Manufacturer</td>
-                                        <td>@medicine.DosageForm</td>
                                         <td>@medicine.Strength</td>
                                         <td>@medicine.Category</td>
                                         <td>
@@ -151,7 +123,7 @@
                                                 @Html.AntiForgeryToken()
                                                 @Html.Hidden("medicineId", medicine.MedicineID)
                                                 <input type="number" name="quantity" min="1" max="@medicine.Quantity" value="1" class="form-control mb-2" />
-                                                <button type="submit" class="btn btn-primary btn-sm">Add to List</button>
+                                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
                                             }
                                         </td>
                                     </tr>
@@ -162,21 +134,6 @@
                 </div>
             </div>
 
-
-
-
-
-
-
-
-
-
-
-            @*<div class="card mt-4">
-                    <div class="card-body">
-                        <a href="@Url.Action("ViewCart", "Seller")" class="btn btn-success">View Cart</a>
-                    </div>
-                </div>*@
         </div>
     </div>
 </div>

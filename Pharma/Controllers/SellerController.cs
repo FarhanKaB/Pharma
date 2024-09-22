@@ -11,6 +11,7 @@ using System.Data.Entity;
 using System.Drawing.Printing;
 using System.Drawing;
 using System.Xml.Linq;
+using System.Net;
 
 namespace Pharma.Controllers
 {
@@ -60,11 +61,11 @@ namespace Pharma.Controllers
 
             var viewModel = new SellerDashboardViewModel
             {
-                TotalUsers = db.Customers.Count(),
-                TotalMedicines = db.Medicines.Count(),
-                TotalOrders = db.Receipts.Count(r => r.SellerID == sellerId), // Count receipts for the current seller
-                LatestMedicines = db.Medicines.OrderByDescending(m => m.MedicineID).ToList(),
-                PendingOrdersCount = db.Orders.Count(o => o.Status == 0)
+                TotalUsers = db.Customers.AsNoTracking().Count(),
+                TotalMedicines = db.Medicines.AsNoTracking().Count(),
+                TotalOrders = db.Receipts.AsNoTracking().Count(r => r.SellerID == sellerId),
+                LatestMedicines = db.Medicines.AsNoTracking().OrderByDescending(m => m.MedicineID).ToList(),
+                PendingOrdersCount = db.Orders.AsNoTracking().Count(o => o.Status == 0)
             };
 
             return View(viewModel);
@@ -410,6 +411,228 @@ namespace Pharma.Controllers
             }
             return RedirectToAction("Orders");
         }
+
+
+        // GET: Seller/Display_Customer_Seller
+        public ActionResult Display_Customer_Seller()
+        {
+            // Ensure SellerID is present in the session
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            // Retrieve the list of customers
+            var customers = db.Customers.ToList(); // Adjust this as needed based on your customer fetching logic
+
+            return View(customers); // Pass the customer list to the view
+        }
+
+        /*// GET: Create Customer Account Seller
+        public ActionResult Create_Customer_Account_Seller()
+        {
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            ViewBag.Customers = db.Customers.ToList();
+            return View();
+        }
+*/
+        // GET: Seller/Logout
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("SellerLogin");
+        }
+
+
+
+
+        // GET: Create Customer Account
+        public ActionResult Create_Customer_Account_Seller()
+        {
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            ViewBag.Customers = db.Customers.ToList();
+            return View();
+        }
+
+        // POST: Create Customer Account
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create_Customer_Account_Seller(Customer customer)
+        {
+            if (Session["SellerID"] == null)
+            {
+                TempData["Error"] = "Seller ID is not set. Please log in again.";
+                return RedirectToAction("SellerLogin");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Check if the username, email, or phone number already exists
+                var existingCustomer = db.Customers
+                    .FirstOrDefault(c => c.Username == customer.Username || c.Email == customer.Email || c.Phone == customer.Phone);
+
+                if (existingCustomer != null)
+                {
+                    if (existingCustomer.Username == customer.Username)
+                    {
+                        ModelState.AddModelError("Username", "A customer with this username already exists.");
+                    }
+                    if (existingCustomer.Email == customer.Email)
+                    {
+                        ModelState.AddModelError("Email", "A customer with this email already exists.");
+                    }
+                    if (existingCustomer.Phone == customer.Phone)
+                    {
+                        ModelState.AddModelError("Phone", "A customer with this phone number already exists.");
+                    }
+                }
+                else
+                {
+                    db.Customers.Add(customer);
+                    db.SaveChanges();
+                    return RedirectToAction("Create_Customer_Account_Seller");
+                }
+            }
+
+            ViewBag.Customers = db.Customers.ToList();
+            return View(customer);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        // Action to get customer details
+        public ActionResult GetCustomerDetails(int id)
+        {
+            if (Session["SellerID"] == null)
+            {
+                return RedirectToAction("SellerLogin");
+            }
+
+            var customer = db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+            return Json(customer, JsonRequestBehavior.AllowGet);
+        }
+
+        // Action to update customer details
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateCustomer(Customer customer)
+        {
+            if (Session["SellerID"] == null)
+            {
+                return RedirectToAction("SellerLogin");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var dbCustomer = db.Customers.Find(customer.CustomerID);
+                if (dbCustomer == null)
+                {
+                    return HttpNotFound();
+                }
+
+                dbCustomer.Username = customer.Username;
+                dbCustomer.Email = customer.Email;
+                dbCustomer.FullName = customer.FullName;
+                dbCustomer.Address = customer.Address;
+                dbCustomer.Phone = customer.Phone;
+
+                db.Entry(dbCustomer).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return RedirectToAction("Display_Customer");
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // Action to delete customer
+        [HttpPost]
+        public ActionResult DeleteCustomer(int id)
+        {
+            if (Session["SellerID"] == null)
+            {
+                return RedirectToAction("SellerLogin");
+            }
+
+            var customer = db.Customers.Find(id);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+
+            db.Customers.Remove(customer);
+            db.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+        // Action to change customer password
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(int customerId, string newPassword)
+        {
+            if (Session["SellerID"] == null)
+            {
+                return RedirectToAction("SellerLogin");
+            }
+
+            var customer = db.Customers.Find(customerId);
+            if (customer == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Update customer password (replace with your hashing logic)
+            customer.Password = newPassword;
+
+            db.Entry(customer).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Display_Customer");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

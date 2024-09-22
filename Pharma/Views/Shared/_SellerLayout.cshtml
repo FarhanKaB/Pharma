@@ -72,37 +72,18 @@
 
                 <!-- Right elements -->
                 <ul class="navbar-nav">
-                    <!-- Cart icon -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-shopping-cart"></i>
-                        </a>
-                    </li>
-
-                    <!-- Notifications -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Some news</a></li>
-                            <li><a class="dropdown-item" href="#">Another news</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
 
                     <!-- Avatar dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuAvatar" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://via.placeholder.com/50" class="rounded" height="24" alt="Avatar Placeholder">
+                            <img src="https://via.placeholder.com/50" class="rounded-circle me-2" height="24" alt="Avatar Placeholder">
+                            <span>@Session["Username"]</span>
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar">
-                            <li><a class="dropdown-item" href="#">My profile</a></li>
-                            <li><a class="dropdown-item" href="#">Settings</a></li>
-                            <li><a class="dropdown-item" href="#">Logout</a></li>
+                            @*<li><a class="dropdown-item" href="#">My profile</a></li>*@
+                            <li><a class="dropdown-item" href="@Url.Action("Logout", "Seller")">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
