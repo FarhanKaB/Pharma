@@ -563,7 +563,7 @@ namespace Pharma.Controllers
                 db.Entry(dbCustomer).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return RedirectToAction("Display_Customer");
+                return RedirectToAction("Display_Customer_Seller");
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }

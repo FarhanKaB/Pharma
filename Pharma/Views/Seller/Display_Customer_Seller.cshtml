@@ -4,6 +4,7 @@
 }
 
 <div class="container-fluid mt-3">
+  
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -66,6 +67,7 @@
             </div>
             <div class="modal-body">
                 <form id="updateForm" method="post" action="@Url.Action("UpdateCustomer", "Seller")">
+                    @Html.AntiForgeryToken() <!-- Add this line for the anti-forgery token -->
                     <input type="hidden" id="CustomerID" name="CustomerID" />
                     <div class="mb-3">
                         <label for="Username" class="form-label">Username</label>
