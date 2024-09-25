@@ -5,19 +5,7 @@
 }
 
 <style>
-    .vertical-scroll-container {
-        max-height: 800px;
-        overflow-y: auto;
-    }
 
-        .vertical-scroll-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .vertical-scroll-container::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 3px;
-        }
 
     .row.no-gutters {
         margin-right: 0;
@@ -283,22 +271,30 @@
         // Initial filter and sort on page load
         filterAndSortMedicines();
 
-        // Handle Add to Cart form submission via AJAX
+
+        // Handle form submission using AJAX
         $(document).on("submit", ".add-to-cart-form", function (event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent the form from submitting normally
+
             var form = $(this);
+            var formData = form.serialize(); // Serialize the form data
+
             $.ajax({
                 url: form.attr("action"),
-                type: form.attr("method"),
-                data: form.serialize(),
+                type: 'POST',
+                data: formData,
                 success: function (response) {
-                    alert("Medicine added to cart successfully!");
+                    // Handle success (e.g., show a message, update cart icon, etc.)
+                    alert("Item added to cart successfully!");
                 },
                 error: function (xhr, status, error) {
-                    alert("Error adding medicine to cart.");
+                    // Handle error (e.g., show an error message)
+                    alert("An error occurred while adding the item to the cart.");
                 }
             });
         });
+
+
 
     });
 </script>
