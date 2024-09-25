@@ -50,7 +50,6 @@ namespace Pharma.Controllers
             return RedirectToAction("Login");
         }
 
-        // GET: Admin/Dashboard
         public ActionResult Dashboard()
         {
             if (Session["AdminID"] == null)
@@ -63,7 +62,11 @@ namespace Pharma.Controllers
             var totalCustomers = db.Customers.Count();
             var uniqueMedicines = db.Medicines.Select(m => m.MedicineID).Distinct().Count();
 
-            var pendingOrdersCount = db.Orders.Count(o => o.Status == OrderStatus.Pending);
+            var pendingOrders = db.Orders
+                .Where(o => o.Status == OrderStatus.Pending)
+                .ToList();
+
+            var pendingOrdersCount = pendingOrders.Count();
             var outForDeliveryOrdersCount = db.Orders.Count(o => o.Status == OrderStatus.OutForDelivery);
 
             ViewBag.TotalSellers = totalSellers;
@@ -72,9 +75,11 @@ namespace Pharma.Controllers
             ViewBag.UniqueMedicines = uniqueMedicines;
             ViewBag.PendingOrdersCount = pendingOrdersCount;
             ViewBag.OutForDeliveryOrdersCount = outForDeliveryOrdersCount;
+            ViewBag.PendingOrders = pendingOrders; // Pass pending orders to the view
 
             return View();
         }
+
 
 
         // GET and POST: Admin/Admin_Inventory
@@ -324,7 +329,6 @@ namespace Pharma.Controllers
             return Json(customer, JsonRequestBehavior.AllowGet);
         }
 
-        // Action to update customer details
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateCustomer(Customer customer)
@@ -351,10 +355,15 @@ namespace Pharma.Controllers
                 db.Entry(dbCustomer).State = EntityState.Modified;
                 db.SaveChanges();
 
+                // Set success message
+                TempData["UpdateSuccessMessage"] = "Customer details updated successfully!";
+
                 return RedirectToAction("Display_Customer");
             }
+
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
+
 
         // Action to delete customer
         [HttpPost]

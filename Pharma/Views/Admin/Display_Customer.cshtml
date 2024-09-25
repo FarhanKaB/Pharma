@@ -4,6 +4,13 @@
 }
 
 <div class="container mt-3">
+    @if (TempData["UpdateSuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["UpdateSuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     <div class="card">
         <div class="card-header">
             <h5 class="card-title"> Customer Management</h5>
@@ -38,7 +45,7 @@
                                 <td>@customer.Phone</td>
                                 <td>
                                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateModal" onclick="populateUpdateModal('@customer.CustomerID', '@customer.Username', '@customer.Email', '@customer.FullName', '@customer.Address', '@customer.Phone')">Update</button>
-                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal" onclick="populateChangePasswordModal('@customer.CustomerID', '@customer.Username')">Change Password</button>
+                                    <button class="btn btn-primary disabled" data-bs-toggle="modal" data-bs-target="#changePasswordModal" onclick="populateChangePasswordModal('@customer.CustomerID', '@customer.Username')">Change Password</button>
                                     <a href="@Url.Action("DeleteCustomer", "Admin", new { id = customer.CustomerID })" class="btn btn-danger">Delete</a>
                                 </td>
                             </tr>
@@ -60,6 +67,7 @@
             </div>
             <div class="modal-body">
                 <form id="updateForm" method="post" action="@Url.Action("UpdateCustomer", "Admin")">
+                    @Html.AntiForgeryToken() <!-- Add this line for the anti-forgery token -->
                     <input type="hidden" id="CustomerID" name="CustomerID" />
                     <div class="mb-3">
                         <label for="Username" class="form-label">Username</label>
@@ -98,6 +106,7 @@
             </div>
             <div class="modal-body">
                 <form id="changePasswordForm" method="post" action="@Url.Action("ChangePassword", "Admin")">
+                    @Html.AntiForgeryToken() <!-- Add this line for the anti-forgery token -->
                     <input type="hidden" id="CustomerId" name="customerId" />
                     <div class="mb-3">
                         <label for="NewPassword" class="form-label">New Password</label>
@@ -109,6 +118,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     function searchTable() {
