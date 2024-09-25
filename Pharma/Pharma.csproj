@@ -248,6 +248,7 @@
     <Content Include="Views\User\User_Offer.cshtml" />
     <Content Include="Views\Seller\Display_Customer_Seller.cshtml" />
     <Content Include="Views\Seller\Create_Customer_Account_Seller.cshtml" />
+    <Content Include="Views\Guest\GuestMedicineDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

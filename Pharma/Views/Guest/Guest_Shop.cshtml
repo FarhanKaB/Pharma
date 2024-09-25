@@ -1,95 +1,40 @@
-﻿@{
+﻿@model IEnumerable<Pharma.Models.Medicine>
+@{
     ViewBag.Title = "Shop";
     ViewBag.Header = "Shop";
     Layout = "~/Views/Shared/Guest_Layout.cshtml";
 }
 
-<style>
-
-
-    .row.no-gutters {
-        margin-right: 0;
-        margin-left: 0;
-    }
-
-        .row.no-gutters > [class^="col-"], .row.no-gutters > [class*=" col-"] {
-            padding-right: 0;
-            padding-left: 0;
-        }
-
-    .medicine-card {
-        position: relative;
-        width: 100%;
-        max-width: 300px;
-        margin: auto;
-        overflow: hidden;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-    }
-
-        .medicine-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .medicine-card .details {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1rem;
-            overflow-y: auto;
-        }
-
-        .medicine-card:hover .details {
-            display: block;
-        }
-
-        .medicine-card .details h3 {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-
-        .medicine-card .details p {
-            margin: 0.5rem 0;
-        }
-
-    .pagination-controls {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-        .pagination-controls button {
-            padding: 10px 15px;
-            margin: 0 5px;
-            background-color: #4A5568;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-            .pagination-controls button:disabled {
-                background-color: #A0AEC0;
-                cursor: not-allowed;
-            }
-
-    .page-info {
-        margin: 0 15px;
-        font-weight: bold;
-    }
-</style>
 
 <section class="px-2 py-32 bg-white md:px-0">
     <div class="container items-center max-w-6xl px-8 mx-auto xl:px-5">
         <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl">
             <span class="block xl:inline">Our Products</span>
         </h1>
+
+        <!-- Popup Notification centered at the top -->
+        <div id="successPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden transition transform duration-500 ease-in-out">
+            <p id="popupSuccessMessage"></p>
+        </div>
+
+        @if (TempData["OrderMessage"] != null)
+        {
+            <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the message from TempData to the popup's content
+            document.getElementById('popupSuccessMessage').innerText = '@TempData["OrderMessage"]';
+
+            // Show the popup by removing the 'hidden' class
+            var successPopup = document.getElementById('successPopup');
+            successPopup.classList.remove('hidden');
+
+            // Hide the popup after 2 seconds
+            setTimeout(function () {
+                successPopup.classList.add('hidden');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        });
+            </script>
+        }
 
         <!-- Search and Filter Section -->
         <div class="flex flex-wrap items-center justify-between mt-8">
@@ -138,48 +83,45 @@
         <div id="medicineResults" class="vertical-scroll-container mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             @foreach (var medicine in Model)
             {
-                <div class="medicine-card" data-name="@medicine.MedicineName" data-generic="@medicine.GenericName" data-category="@medicine.Category" data-price="@medicine.Price" data-id="@medicine.MedicineID" data-quantity="@medicine.Quantity">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName">
-                    <div class="p-4">
-                        <h2 class="text-xl font-semibold text-gray-800">@medicine.MedicineName</h2>
+                <div class="medicine-card flex flex-col justify-between bg-white shadow rounded-lg overflow-hidden" data-name="@medicine.MedicineName" data-generic="@medicine.GenericName" data-category="@medicine.Category" data-price="@medicine.Price" data-id="@medicine.MedicineID" data-quantity="@medicine.Quantity">
+                    <!-- Image -->
+                    <div class="image-container h-48">
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(medicine.ImageData)" alt="@medicine.MedicineName" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="p-4 flex flex-col flex-grow">
+                        <!-- Medicine Name with link to details -->
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            <a href="@Url.Action("GuestMedicineDetails", "Guest", new { id = medicine.MedicineID })" class="text-indigo-600 hover:underline">
+                                @medicine.MedicineName
+                            </a>
+                        </h2>
                         <p class="mt-2 text-gray-600">@medicine.Manufacturer</p>
                         <div class="flex items-center justify-between mt-4">
                             <h3 class="text-lg font-semibold text-gray-800">$@medicine.Price</h3>
-                        </div>
-                    </div>
-                    <div class="details">
-                        <h3 class="text-base font-semibold">@medicine.MedicineName</h3>
-                        <p class="text-sm"><strong>Generic Name:</strong> @medicine.GenericName</p>
-                        <p class="text-sm"><strong>Manufacturer:</strong> @medicine.Manufacturer</p>
-                        <p class="text-sm"><strong>Dosage Form:</strong> @medicine.DosageForm</p>
-                        <p class="text-sm"><strong>Strength:</strong> @medicine.Strength</p>
-                        <p class="text-sm"><strong>Quantity:</strong> @medicine.Quantity</p>
-                        <p class="text-sm"><strong>Price:</strong> $@medicine.Price</p>
-                        <p class="text-sm"><strong>Category:</strong> @medicine.Category</p>
-
-                        @if (medicine.Quantity > 0)
-                        {
-                            using (Html.BeginForm("AddToCart", "Guest", FormMethod.Post, new { @class = "add-to-cart-form" }))
+                            @if (medicine.Quantity > 0)
                             {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("medicineId", (int)medicine.MedicineID)
-                                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Add to Cart</button>
+                                <form class="add-to-cart-form" action="@Url.Action("AddToCart", "User")" method="post" data-medicine-id="@medicine.MedicineID">
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("medicineId", medicine.MedicineID)
+                                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Add to Cart</button>
+                                </form>
                             }
-                        }
-                        else
-                        {
-                            <p class="font-bold text-red-600">Out of Stock</p>
-                        }
+                            else
+                            {
+                                <p class="font-bold text-red-600">Out of Stock</p>
+                            }
+                        </div>
                     </div>
                 </div>
             }
         </div>
 
         <!-- Pagination Controls -->
-        <div class="pagination-controls">
-            <button id="prevPage" disabled>Previous</button>
-            <span id="pageInfo" class="page-info"></span>
-            <button id="nextPage">Next</button>
+        <div class="flex justify-center mt-8">
+            <button id="prevPage" class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Previous</button>
+            <span id="pageInfo" class="mx-4 text-lg font-semibold"></span>
+            <button id="nextPage" class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Next</button>
         </div>
     </div>
 </section>
@@ -187,9 +129,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        var currentPage = 1;
-        var medicinesPerPage = 20;
-        var medicines = $(".medicine-card");
+        const medicinesPerPage = 20; // Define how many items per page
+        let currentPage = 1;
+        let medicines = $(".medicine-card");
 
         // Store the original order of the medicine cards
         medicines.each(function (index) {
@@ -202,8 +144,11 @@
             var sortOption = $("#sortFilter").val();
             var stockFilter = $("#stockFilter").val();
 
+            // Show all medicines initially
+            medicines = $(".medicine-card");
+
             // Filter medicines based on search query, category, and stock status
-            var filteredMedicines = medicines.filter(function () {
+            medicines = medicines.filter(function () {
                 var medicineName = $(this).data("name").toLowerCase();
                 var genericName = $(this).data("generic").toLowerCase();
                 var category = $(this).data("category");
@@ -217,7 +162,7 @@
             });
 
             // Sort the filtered medicines
-            var sortedMedicines = filteredMedicines.sort(function (a, b) {
+            medicines.sort(function (a, b) {
                 if (sortOption === "lowToHigh") {
                     return $(a).data("price") - $(b).data("price");
                 } else if (sortOption === "highToLow") {
@@ -230,24 +175,21 @@
                 }
             });
 
-            // Paginate the sorted medicines
-            paginateMedicines(sortedMedicines);
+            // Apply pagination
+            paginateMedicines();
         }
 
-        function paginateMedicines(filteredMedicines) {
-            var totalPages = Math.ceil(filteredMedicines.length / medicinesPerPage);
-            currentPage = Math.min(currentPage, totalPages);
+        function paginateMedicines() {
+            const totalPages = Math.ceil(medicines.length / medicinesPerPage);
+            const start = (currentPage - 1) * medicinesPerPage;
+            const end = start + medicinesPerPage;
 
-            // Hide all medicines first
-            medicines.hide();
+            // Hide all medicines, then show only the ones on the current page
+            $(".medicine-card").hide();
+            medicines.slice(start, end).show();
 
-            // Show only the medicines for the current page
-            var start = (currentPage - 1) * medicinesPerPage;
-            var end = start + medicinesPerPage;
-            filteredMedicines.slice(start, end).show();
-
-            // Update pagination controls
-            $("#pageInfo").text("Page " + currentPage + " of " + totalPages);
+            // Update page info and button states
+            $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
             $("#prevPage").prop("disabled", currentPage === 1);
             $("#nextPage").prop("disabled", currentPage === totalPages);
         }
@@ -255,21 +197,24 @@
         // Event listeners
         $("#searchBox, #categoryFilter, #sortFilter, #stockFilter").on("input change", filterAndSortMedicines);
 
-        // Pagination button listeners
-        $("#prevPage").on("click", function () {
+        // Pagination controls
+        $("#prevPage").click(function () {
             if (currentPage > 1) {
                 currentPage--;
-                filterAndSortMedicines();
+                paginateMedicines();
             }
         });
 
-        $("#nextPage").on("click", function () {
-            currentPage++;
-            filterAndSortMedicines();
+        $("#nextPage").click(function () {
+            const totalPages = Math.ceil(medicines.length / medicinesPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                paginateMedicines();
+            }
         });
 
-        // Initial filter and sort on page load
-        filterAndSortMedicines();
+        filterAndSortMedicines(); // Initial filter and sort on page load
+
 
 
         // Handle form submission using AJAX
@@ -293,8 +238,5 @@
                 }
             });
         });
-
-
-
     });
 </script>

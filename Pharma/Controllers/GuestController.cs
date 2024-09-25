@@ -105,5 +105,19 @@ namespace Pharma.Controllers
         }
 
 
+
+        // GET: Guest/GuestMedicineDetails
+        public ActionResult GuestMedicineDetails(int id)
+        {
+
+            var medicine = db.Medicines.Find(id); // Fetch medicine by ID
+            if (medicine == null)
+            {
+                return HttpNotFound();
+            }
+            return View(medicine);
+        }
+
+
     }
 }
