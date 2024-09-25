@@ -5,6 +5,54 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
 }
 
+
+<!-- Popup Notification centered at the top -->
+<div id="errorPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded-lg shadow-lg hidden transition transform duration-500 ease-in-out">
+    <p id="popupErrorMessage"></p>
+</div>
+
+<!-- Popup Notification centered at the top -->
+<div id="successPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden transition transform duration-500 ease-in-out">
+    <p id="popupSuccessMessage"></p>
+</div>
+
+
+@if (TempData["Error_Password"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the error message from TempData to the popup's content
+            document.getElementById('popupErrorMessage').innerText = '@TempData["Error_Password"]';
+
+            // Show the popup by removing the 'hidden' class
+            var errorPopup = document.getElementById('errorPopup');
+            errorPopup.classList.remove('hidden');
+
+            // Hide the popup after 2 seconds
+            setTimeout(function () {
+                errorPopup.classList.add('hidden');
+            }, 3000); 
+    </script>
+}
+@if (TempData["Success_Password"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the message from TempData to the popup's content
+            document.getElementById('popupSuccessMessage').innerText = '@TempData["Success_Password"]';
+
+            // Show the popup by removing the 'hidden' class
+            var successPopup = document.getElementById('successPopup');
+            successPopup.classList.remove('hidden');
+
+            // Hide the popup after 2 seconds
+            setTimeout(function () {
+                successPopup.classList.add('hidden');
+            }, 3000); 
+        });
+    </script>
+}
+
 <!-- Section: User Information -->
 <section class="px-2 py-32 bg-white md:px-0">
     <div class="container max-w-6xl px-8 mx-auto xl:px-5">
@@ -81,17 +129,18 @@
                             <form id="passwordForm">
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700">Current Password</label>
-                                    <input type="password" id="currentPassword" class="mt-1 block w-full border-gray-300 rounded-md p-2 focus:ring focus:ring-indigo-500" placeholder="@Model.Password" readonly />
+                                    <input type="password" id="currentPassword" name="CurrentPassword" class="mt-1 block w-full border-gray-300 rounded-md p-2 focus:ring focus:ring-indigo-500" placeholder="Enter Current Password" required />
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700">New Password</label>
-                                    <input type="password" id="newPassword" name="Password" class="mt-1 block w-full border-gray-300 rounded-md p-2 focus:ring focus:ring-indigo-500" placeholder="New Password" />
+                                    <input type="password" id="newPassword" name="NewPassword" class="mt-1 block w-full border-gray-300 rounded-md p-2 focus:ring focus:ring-indigo-500" placeholder="Enter New Password" required />
                                 </div>
                                 <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition duration-200">Change Password</button>
                             </form>
                         }
                     </div>
                 </div>
+
 
 
             }

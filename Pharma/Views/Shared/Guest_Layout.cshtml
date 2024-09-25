@@ -79,10 +79,16 @@
             });
         }
 
+        function closeModal() {
+            // Hide the modal instantly and clear the content
+            document.getElementById('viewCartModal').style.display = 'none';
+            $('#modalContent').empty(); // Clear the modal content immediately
+        }
+
         // Close the modal when clicking outside of it
         $(document).click(function (event) {
-            if (!$(event.target).closest('#modalContent').length) {
-                $('#viewCartModal').hide();
+            if (!$(event.target).closest('#modalContent').length && document.getElementById('viewCartModal').style.display === 'flex') {
+                closeModal();
             }
         });
     </script>

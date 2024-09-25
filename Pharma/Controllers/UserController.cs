@@ -211,7 +211,10 @@ namespace Pharma.Controllers
             // Clear the cart after placing the order
             Session["Cart"] = null;
 
-            return RedirectToAction("ViewMedicines"); // Redirect to an order confirmation page
+            TempData["OrderMessage"] = "Order placed successfully.";
+            return RedirectToAction("ViewMedicines");
+
+
         }
 
         // GET: User/RequestMedicine
@@ -346,7 +349,7 @@ namespace Pharma.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PassChange(Customer passcng)
+        public ActionResult PassChange(string CurrentPassword, string NewPassword)
         {
             if (ModelState.IsValid)
             {
@@ -355,13 +358,33 @@ namespace Pharma.Controllers
 
                 if (customer != null)
                 {
-                    customer.Password = !string.IsNullOrEmpty(passcng.Password) ? passcng.Password : customer.Password;
-                    db.SaveChanges();
+                    // Validate if the entered current password matches the one stored in the database
+                    if (customer.Password == CurrentPassword)
+                    {
+                        // If the current password is correct, update to the new password
+                        customer.Password = NewPassword;
+                        db.SaveChanges();
+                        TempData["Success_Password"] = "Password updated successfully.";
+                    }
+                    else
+                    {
+                        // If the current password is incorrect, return an error
+                        TempData["Error_Password"] = "The current password you entered is incorrect.";
+                        return RedirectToAction("Profile");
+                    }
+                }
+                else
+                {
+                    TempData["noUser"] = "User not found.";
+                    return RedirectToAction("Profile");
                 }
             }
 
             return RedirectToAction("Profile");
         }
+
+
+
 
         // GET: User/OrderHistory
         [HttpGet]

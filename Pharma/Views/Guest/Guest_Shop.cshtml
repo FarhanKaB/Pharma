@@ -4,7 +4,6 @@
     Layout = "~/Views/Shared/Guest_Layout.cshtml";
 }
 
-
 <style>
     .vertical-scroll-container {
         max-height: 800px;
@@ -70,6 +69,32 @@
         .medicine-card .details p {
             margin: 0.5rem 0;
         }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .pagination-controls button {
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #4A5568;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            .pagination-controls button:disabled {
+                background-color: #A0AEC0;
+                cursor: not-allowed;
+            }
+
+    .page-info {
+        margin: 0 15px;
+        font-weight: bold;
+    }
 </style>
 
 <section class="px-2 py-32 bg-white md:px-0">
@@ -149,7 +174,7 @@
                             using (Html.BeginForm("AddToCart", "Guest", FormMethod.Post, new { @class = "add-to-cart-form" }))
                             {
                                 @Html.AntiForgeryToken()
-                                @Html.Hidden("medicineId", (int)medicine.MedicineID) 
+                                @Html.Hidden("medicineId", (int)medicine.MedicineID)
                                 <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Add to Cart</button>
                             }
                         }
@@ -161,14 +186,25 @@
                 </div>
             }
         </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-controls">
+            <button id="prevPage" disabled>Previous</button>
+            <span id="pageInfo" class="page-info"></span>
+            <button id="nextPage">Next</button>
+        </div>
     </div>
 </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
+        var currentPage = 1;
+        var medicinesPerPage = 20;
+        var medicines = $(".medicine-card");
+
         // Store the original order of the medicine cards
-        $(".medicine-card").each(function (index) {
+        medicines.each(function (index) {
             $(this).data("original-order", index);
         });
 
@@ -178,11 +214,8 @@
             var sortOption = $("#sortFilter").val();
             var stockFilter = $("#stockFilter").val();
 
-            // Show all medicines initially
-            var allMedicines = $(".medicine-card");
-
             // Filter medicines based on search query, category, and stock status
-            var filteredMedicines = allMedicines.filter(function () {
+            var filteredMedicines = medicines.filter(function () {
                 var medicineName = $(this).data("name").toLowerCase();
                 var genericName = $(this).data("generic").toLowerCase();
                 var category = $(this).data("category");
@@ -195,12 +228,8 @@
                 return matchesSearch && matchesCategory && matchesStock;
             });
 
-            // Hide all medicines first, then show the filtered ones
-            allMedicines.hide();
-            filteredMedicines.show();
-
-            // Sort the visible (filtered) medicines
-            var visibleMedicines = filteredMedicines.sort(function (a, b) {
+            // Sort the filtered medicines
+            var sortedMedicines = filteredMedicines.sort(function (a, b) {
                 if (sortOption === "lowToHigh") {
                     return $(a).data("price") - $(b).data("price");
                 } else if (sortOption === "highToLow") {
@@ -213,12 +242,46 @@
                 }
             });
 
-            // Reorder the medicines in the DOM
-            $("#medicineResults").append(visibleMedicines);
+            // Paginate the sorted medicines
+            paginateMedicines(sortedMedicines);
+        }
+
+        function paginateMedicines(filteredMedicines) {
+            var totalPages = Math.ceil(filteredMedicines.length / medicinesPerPage);
+            currentPage = Math.min(currentPage, totalPages);
+
+            // Hide all medicines first
+            medicines.hide();
+
+            // Show only the medicines for the current page
+            var start = (currentPage - 1) * medicinesPerPage;
+            var end = start + medicinesPerPage;
+            filteredMedicines.slice(start, end).show();
+
+            // Update pagination controls
+            $("#pageInfo").text("Page " + currentPage + " of " + totalPages);
+            $("#prevPage").prop("disabled", currentPage === 1);
+            $("#nextPage").prop("disabled", currentPage === totalPages);
         }
 
         // Event listeners
         $("#searchBox, #categoryFilter, #sortFilter, #stockFilter").on("input change", filterAndSortMedicines);
+
+        // Pagination button listeners
+        $("#prevPage").on("click", function () {
+            if (currentPage > 1) {
+                currentPage--;
+                filterAndSortMedicines();
+            }
+        });
+
+        $("#nextPage").on("click", function () {
+            currentPage++;
+            filterAndSortMedicines();
+        });
+
+        // Initial filter and sort on page load
+        filterAndSortMedicines();
 
         // Handle Add to Cart form submission via AJAX
         $(document).on("submit", ".add-to-cart-form", function (event) {
@@ -237,6 +300,5 @@
             });
         });
 
-        filterAndSortMedicines(); // Initial filter and sort on page load
     });
 </script>

@@ -56,7 +56,7 @@
                     <div class="text-lg font-semibold text-gray-900 dark:text-white">
                         Total: <span id="totalPrice">$@ViewBag.TotalPrice</span>
                     </div>
-                    <button type="button" class="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300" onclick="showSignInPopover()">
+                    <button type="button" class="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 focus:outline-none " onclick="showSignInPopover()">
                         Place Order
                     </button>
 
@@ -70,15 +70,16 @@
     </div>
 </div>
 
-<!-- Popover for sign-in message -->
-<div id="signInPopover" class="fixed bottom-4 right-4 bg-gray-800 text-white text-sm rounded-lg p-4 shadow-lg hidden">
-    Please sign in to place your order.
+<!-- Popover for login message inside the cart modal -->
+<div id="loginMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-sm rounded-lg p-4 shadow-lg hidden">
+    You need to login first.
 </div>
 
+
 <script>
-    function closeModal() {
+/*    function closeModal() {
         document.getElementById('viewCartModal').style.display = 'none';
-    }
+    }*/
 
     function incrementQuantity(button) {
         var input = button.previousElementSibling;
@@ -133,19 +134,19 @@
     }
 
     function showSignInPopover() {
-        var popover = document.getElementById('signInPopover');
-        popover.classList.remove('hidden'); // Show the popover
+        // Set the login message text
+        const loginMessage = document.getElementById('loginMessage');
 
-        // Hide the popover after 3 seconds
+        // Show the popup by removing the 'hidden' class
+        loginMessage.classList.remove('hidden');
+
+        // Hide the popup after 2 seconds
         setTimeout(function () {
-            popover.classList.add('hidden');
-        }, 3000);
+            loginMessage.classList.add('hidden');
+        }, 2000); // 2000 milliseconds = 2 seconds
     }
 
 
-    document.addEventListener('DOMContentLoaded', () => {
-        updateTotal();
-    });
 </script>
 
 
@@ -178,25 +179,9 @@
         overflow: auto;
         padding: 20px;
     }
-
-    #signInPopover {
-        position: fixed;
-        top: 20px; /* Position near the top of the screen */
-        left: 50%; /* Center horizontally */
-        transform: translateX(-50%); /* Center alignment */
-        z-index: 10000; /* Ensure it appears above the modal */
-        background-color: rgba(0, 0, 0, 0.8); /* Slight transparency to make it noticeable */
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-        color: white;
-        text-align: center; /* Center text inside the popover */
-        max-width: 250px; /* Set a maximum width */
-        height: 30px; /* Set a fixed height */
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
+    #loginMessage {
+        z-index: 9999;
     }
-
-
 
 
 </style>

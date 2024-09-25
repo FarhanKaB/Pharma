@@ -11,6 +11,30 @@
             <span class="block xl:inline">Our Products</span>
         </h1>
 
+        <!-- Popup Notification centered at the top -->
+        <div id="successPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg hidden transition transform duration-500 ease-in-out">
+            <p id="popupSuccessMessage"></p>
+        </div>
+
+        @if (TempData["OrderMessage"] != null)
+        {
+            <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the message from TempData to the popup's content
+            document.getElementById('popupSuccessMessage').innerText = '@TempData["OrderMessage"]';
+
+            // Show the popup by removing the 'hidden' class
+            var successPopup = document.getElementById('successPopup');
+            successPopup.classList.remove('hidden');
+
+            // Hide the popup after 2 seconds
+            setTimeout(function () {
+                successPopup.classList.add('hidden');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        });
+            </script>
+        }
+
         <!-- Search and Filter Section -->
         <div class="flex flex-wrap items-center justify-between mt-8">
             <!-- Search Box -->
@@ -91,14 +115,25 @@
                 </div>
             }
         </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex justify-center mt-8">
+            <button id="prevPage" class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Previous</button>
+            <span id="pageInfo" class="mx-4 text-lg font-semibold"></span>
+            <button id="nextPage" class="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">Next</button>
+        </div>
     </div>
 </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
+        const medicinesPerPage = 20; // Define how many items per page
+        let currentPage = 1;
+        let medicines = $(".medicine-card");
+
         // Store the original order of the medicine cards
-        $(".medicine-card").each(function (index) {
+        medicines.each(function (index) {
             $(this).data("original-order", index);
         });
 
@@ -109,10 +144,10 @@
             var stockFilter = $("#stockFilter").val();
 
             // Show all medicines initially
-            var allMedicines = $(".medicine-card");
+            medicines = $(".medicine-card");
 
             // Filter medicines based on search query, category, and stock status
-            var filteredMedicines = allMedicines.filter(function () {
+            medicines = medicines.filter(function () {
                 var medicineName = $(this).data("name").toLowerCase();
                 var genericName = $(this).data("generic").toLowerCase();
                 var category = $(this).data("category");
@@ -125,12 +160,8 @@
                 return matchesSearch && matchesCategory && matchesStock;
             });
 
-            // Hide all medicines first, then show the filtered ones
-            allMedicines.hide();
-            filteredMedicines.show();
-
-            // Sort the visible (filtered) medicines
-            var visibleMedicines = filteredMedicines.sort(function (a, b) {
+            // Sort the filtered medicines
+            medicines.sort(function (a, b) {
                 if (sortOption === "lowToHigh") {
                     return $(a).data("price") - $(b).data("price");
                 } else if (sortOption === "highToLow") {
@@ -143,14 +174,47 @@
                 }
             });
 
-            // Reorder the medicines in the DOM
-            $("#medicineResults").append(visibleMedicines);
+            // Apply pagination
+            paginateMedicines();
+        }
+
+        function paginateMedicines() {
+            const totalPages = Math.ceil(medicines.length / medicinesPerPage);
+            const start = (currentPage - 1) * medicinesPerPage;
+            const end = start + medicinesPerPage;
+
+            // Hide all medicines, then show only the ones on the current page
+            $(".medicine-card").hide();
+            medicines.slice(start, end).show();
+
+            // Update page info and button states
+            $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+            $("#prevPage").prop("disabled", currentPage === 1);
+            $("#nextPage").prop("disabled", currentPage === totalPages);
         }
 
         // Event listeners
         $("#searchBox, #categoryFilter, #sortFilter, #stockFilter").on("input change", filterAndSortMedicines);
 
+        // Pagination controls
+        $("#prevPage").click(function () {
+            if (currentPage > 1) {
+                currentPage--;
+                paginateMedicines();
+            }
+        });
+
+        $("#nextPage").click(function () {
+            const totalPages = Math.ceil(medicines.length / medicinesPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                paginateMedicines();
+            }
+        });
+
         filterAndSortMedicines(); // Initial filter and sort on page load
+
+
 
         // Handle form submission using AJAX
         $(document).on("submit", ".add-to-cart-form", function (event) {
