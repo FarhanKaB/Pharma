@@ -45,15 +45,36 @@
                             <tr class="bg-white dark:bg-gray-800">
                                 <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.OrderID</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-block px-2 py-1 rounded bg-yellow-200 text-yellow-800">@orderMedicine.Status</span>
+                                    @if (orderMedicine.Status == Pharma.Models.OrderStatus.Pending)
+                                    {
+                                        <span class="inline-block px-2 py-1 rounded bg-yellow-200 text-yellow-800">
+                                            @orderMedicine.Status
+                                        </span>
+                                    }
+                                    else if (orderMedicine.Status == Pharma.Models.OrderStatus.OutForDelivery)
+                                    {
+                                        <span class="inline-block px-2 py-1 rounded bg-blue-200 text-blue-800">
+                                            @orderMedicine.Status
+                                        </span>
+                                    }
+                                    else if (orderMedicine.Status == Pharma.Models.OrderStatus.Delivered)
+                                    {
+                                        <span class="inline-block px-2 py-1 rounded bg-green-200 text-green-800">
+                                            @orderMedicine.Status
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-block px-2 py-1 rounded bg-gray-200 text-gray-800">
+                                            @orderMedicine.Status
+                                        </span>
+                                    }
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.OrderDate</td>
                                 <td class="px-6 py-4 whitespace-nowrap">@orderMedicine.TotalPrice</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="#" class="text-blue-600 hover:underline" data-orderid="@orderMedicine.OrderID">View Details</a>
                                 </td>
-
-
 
                             </tr>
                         }

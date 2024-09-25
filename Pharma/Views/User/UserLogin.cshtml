@@ -16,6 +16,35 @@
 </head>
 
 <body class="bg-white dark:bg-gray-900">
+
+    <!-- Popup Notification centered at the top -->
+    <div id="errorPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-4 rounded-lg shadow-lg hidden transition transform duration-500 ease-in-out">
+        <p id="popupErrorMessage"></p>
+    </div>
+
+
+
+    @if (TempData["Error_User"] != null)
+    {
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set the error message from TempData to the popup's content
+            document.getElementById('popupErrorMessage').innerText = '@TempData["Error_User"]';
+
+            // Show the popup by removing the 'hidden' class
+            var errorPopup = document.getElementById('errorPopup');
+            errorPopup.classList.remove('hidden');
+
+            // Hide the popup after 2 seconds
+            setTimeout(function () {
+                errorPopup.classList.add('hidden');
+            }, 2000); // 2000 milliseconds = 2 seconds
+        });
+        </script>
+    }
+
+
+
     <div class="flex justify-center h-screen">
         <div class="hidden bg-cover lg:block lg:w-2/3"
              style="background-image: url(https://img.freepik.com/premium-photo/medical-store-pharmacy-racks-wallpaper-background_1230902-10505.jpg?w=826)">

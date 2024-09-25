@@ -26,11 +26,23 @@ namespace Pharma.Controllers
 
         public ActionResult User_Offer()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             return View();
         }
 
         public ActionResult UserAbout()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             return View();
         }
 
@@ -102,12 +114,24 @@ namespace Pharma.Controllers
         // GET: User/Dashboard
         public ActionResult Dashboard()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             return View();
         }
 
         // GET: User/ViewMedicines
         public ActionResult ViewMedicines()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             var medicines = db.Medicines.ToList();
             return View(medicines);
         }
@@ -115,6 +139,7 @@ namespace Pharma.Controllers
         // GET: User/MedicineDetails
         public ActionResult MedicineDetails(int id)
         {
+
             var medicine = db.Medicines.Find(id); // Fetch medicine by ID
             if (medicine == null)
             {
@@ -244,6 +269,12 @@ namespace Pharma.Controllers
         // GET: User/ViewCart
         public ActionResult ViewCart()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             List<Medicine> cartMedicines = new List<Medicine>();
             decimal totalPrice = 0;
 
@@ -280,6 +311,12 @@ namespace Pharma.Controllers
         // GET: User/Profile
         public new ActionResult Profile()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             int customerId = (int)Session["UserID"];
             var customerDetails = db.Customers.FirstOrDefault(c => c.CustomerID == customerId);
             return View(customerDetails);
@@ -330,6 +367,12 @@ namespace Pharma.Controllers
         [HttpGet]
         public ActionResult OrderHistory()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             int customerId = (int)Session["UserID"];
             var orderMedicines = db.Orders.Where(c => c.CustomerID == customerId).Include(o => o.OrderDetails).ToList();
             return View(orderMedicines);
@@ -368,6 +411,47 @@ namespace Pharma.Controllers
                 return View(orderMedicines);
             }
         }
+
+
+        public ActionResult GetOrderDetails(int orderId)
+        {
+            var order = db.Orders
+                          .Include(o => o.OrderDetails.Select(od => od.Medicine))
+                          .Include(o => o.Customer)
+                          .FirstOrDefault(o => o.OrderID == orderId);
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Return JSON with necessary data
+            return Json(new
+            {
+                order.OrderID,
+                OrderDate = order.OrderDate.ToString("yyyy-MM-dd"),
+                order.TotalPrice,
+                Customer = new
+                {
+                    order.Customer.FullName,
+                    order.Customer.Email,
+                    order.Customer.Phone,
+                    order.Customer.Address
+                },
+                OrderDetails = order.OrderDetails.Select(od => new
+                {
+                    od.Medicine.MedicineName,
+                    od.Medicine.GenericName,
+                    od.Medicine.Manufacturer,
+                    od.Medicine.DosageForm,
+                    od.Medicine.Strength,
+                    od.Quantity,
+                    od.Price,
+                    od.Medicine.Category
+                })
+            }, JsonRequestBehavior.AllowGet);
+        }
+
 
         public ActionResult SendMessage(string subject, string message)
         {
@@ -415,6 +499,12 @@ namespace Pharma.Controllers
 
         public ActionResult UserContact()
         {
+            if (Session["UserID"] == null)
+            {
+                TempData["Error_User"] = "You need to login first.";
+                return RedirectToAction("UserLogin");
+            }
+
             return View();
         }
     }
